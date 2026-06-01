@@ -1,470 +1,408 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PatchTick - Sub2API 智能转发服务</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --bg: #0f0f1a;
-            --card: #1a1a2e;
-            --border: #2a2a4a;
-            --text: #e2e8f0;
-            --text-muted: #94a3b8;
-            --accent: #22d3ee;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.7;
-        }
-        .container { max-width: 960px; margin: 0 auto; padding: 0 20px; }
-        nav {
-            position: sticky; top: 0; z-index: 100;
-            background: rgba(15,15,26,0.95); backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border); padding: 16px 0;
-        }
-        nav .container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
-        nav a { color: var(--text-muted); text-decoration: none; margin-left: 20px; font-size: 0.9rem; }
-        nav a:hover { color: var(--accent); }
-
-        /* Hero */
-        .hero {
-            text-align: center; padding: 80px 0 60px;
-            background: linear-gradient(180deg, rgba(99,102,241,0.1) 0%, transparent 100%);
-        }
-        .hero h1 { font-size: 2.8rem; margin-bottom: 16px; }
-        .hero h1 span { color: var(--accent); }
-        .hero p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
-
-        /* Sections */
-        section { padding: 60px 0; border-top: 1px solid var(--border); }
-        section h2 {
-            font-size: 1.6rem; margin-bottom: 8px;
-            display: flex; align-items: center; gap: 10px;
-        }
-        section h2 .emoji { font-size: 1.4rem; }
-        .section-desc { color: var(--text-muted); margin-bottom: 30px; font-size: 0.95rem; }
-
-        /* Cards */
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .card {
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 24px; position: relative; overflow: hidden;
-        }
-        .card.popular { border-color: var(--accent); }
-        .card.popular::before {
-            content: '推荐'; position: absolute; top: 12px; right: -28px;
-            background: var(--accent); color: #000; font-size: 0.7rem; font-weight: 700;
-            padding: 2px 30px; transform: rotate(45deg);
-        }
-        .card h3 { font-size: 1.2rem; margin-bottom: 8px; }
-        .card .price { font-size: 2rem; font-weight: 700; color: var(--accent); margin: 12px 0; }
-        .card .price small { font-size: 0.8rem; color: var(--text-muted); font-weight: 400; }
-        .card ul { list-style: none; margin-top: 16px; }
-        .card ul li { padding: 6px 0; color: var(--text-muted); font-size: 0.9rem; }
-        .card ul li::before { content: '✓ '; color: var(--success); font-weight: 700; }
-
-        /* Steps */
-        .steps { counter-reset: step; }
-        .step {
-            position: relative; padding-left: 50px; margin-bottom: 28px;
-        }
-        .step::before {
-            counter-increment: step; content: counter(step);
-            position: absolute; left: 0; top: 0;
-            width: 32px; height: 32px; border-radius: 50%;
-            background: var(--primary); color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.85rem; font-weight: 700;
-        }
-        .step h4 { margin-bottom: 4px; }
-        .step p { color: var(--text-muted); font-size: 0.9rem; }
-
-        /* Code blocks */
-        .code-block {
-            background: #0d0d1a; border: 1px solid var(--border);
-            border-radius: 8px; padding: 16px 20px; margin: 12px 0;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            font-size: 0.85rem; overflow-x: auto; line-height: 1.6;
-        }
-        .code-block .comment { color: #6b7280; }
-        .code-block .key { color: var(--accent); }
-        .code-block .str { color: #a78bfa; }
-
-        /* Table */
-        .table-wrap { overflow-x: auto; margin-top: 16px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: var(--card); color: var(--accent); font-weight: 600; white-space: nowrap; }
-        td { color: var(--text-muted); }
-        tr:hover td { background: rgba(99,102,241,0.05); }
-
-        /* Badges */
-        .badge {
-            display: inline-block; padding: 2px 8px; border-radius: 4px;
-            font-size: 0.75rem; font-weight: 600;
-        }
-        .badge-green { background: rgba(16,185,129,0.15); color: var(--success); }
-        .badge-yellow { background: rgba(245,158,11,0.15); color: var(--warning); }
-        .badge-red { background: rgba(239,68,68,0.15); color: var(--danger); }
-
-        /* Alert box */
-        .alert {
-            background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.3);
-            border-radius: 8px; padding: 14px 18px; margin: 16px 0;
-            font-size: 0.9rem;
-        }
-        .alert-warn {
-            background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.3);
-        }
-
-        /* Apps grid */
-        .app-item {
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 8px; padding: 16px; margin-bottom: 12px;
-        }
-        .app-item h4 { color: var(--accent); margin-bottom: 6px; font-size: 0.95rem; }
-        .app-item p { color: var(--text-muted); font-size: 0.85rem; }
-
-        /* Footer */
-        footer {
-            border-top: 1px solid var(--border); padding: 30px 0;
-            text-align: center; color: var(--text-muted); font-size: 0.85rem;
-        }
-
-        @media (max-width: 640px) {
-            .hero h1 { font-size: 1.8rem; }
-            .card-grid { grid-template-columns: 1fr; }
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PatchTick - Sub2API 智能订阅转API服务</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a2e;line-height:1.6;background:#fafbff}
+a{color:#4f46e5;text-decoration:none}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+nav{background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:100;padding:16px 0}
+nav .container{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.5rem;font-weight:800;color:#4f46e5}
+.nav-links a{margin-left:24px;font-size:.9rem;color:#555}
+.nav-links a:hover{color:#4f46e5}
 </style>
 </head>
 <body>
-
-<!-- Navigation -->
 <nav>
-    <div class="container">
-        <div class="logo">⚡ PatchTick</div>
-        <div>
-            <a href="#pricing">定价</a>
-            <a href="#billing">计费</a>
-            <a href="#start">开通</a>
-            <a href="#integration">接入</a>
-            <a href="#apps">应用</a>
-            <a href="#errors">错误码</a>
-        </div>
-    </div>
+<div class="container">
+<div class="logo">⚡ PatchTick</div>
+<div class="nav-links">
+<a href="#pricing">定价</a>
+<a href="#billing">计费</a>
+<a href="#onboard">开通</a>
+<a href="#console">控制台</a>
+<a href="#integration">接入</a>
+<a href="#apps">应用</a>
+<a href="#errors">错误码</a>
+</div>
+</div>
 </nav>
 
+
+<style>
+.hero{background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);color:#fff;padding:80px 0;text-align:center}
+.hero h1{font-size:2.8rem;margin-bottom:16px}
+.hero p{font-size:1.2rem;opacity:.9;max-width:600px;margin:0 auto 32px}
+.hero .badge{display:inline-block;background:rgba(255,255,255,.2);padding:6px 16px;border-radius:20px;font-size:.85rem;margin-bottom:24px}
+.btn{display:inline-block;padding:12px 32px;border-radius:8px;font-weight:600;font-size:1rem;cursor:pointer;border:none;transition:.2s}
+.btn-white{background:#fff;color:#4f46e5}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+section{padding:64px 0}
+section h2{font-size:2rem;text-align:center;margin-bottom:12px;color:#1a1a2e}
+section .subtitle{text-align:center;color:#666;margin-bottom:48px;font-size:1rem}
+.card{background:#fff;border-radius:12px;padding:32px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid #e5e7eb}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(480px,1fr));gap:24px}
+
+
+.pricing-card{text-align:center;position:relative;transition:.2s}
+.pricing-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(79,70,229,.12)}
+.pricing-card.popular{border:2px solid #4f46e5}
+.pricing-card.popular::before{content:'热门';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#4f46e5;color:#fff;padding:2px 16px;border-radius:12px;font-size:.8rem}
+.pricing-card .price{font-size:2.5rem;font-weight:800;color:#4f46e5;margin:16px 0 8px}
+.pricing-card .price span{font-size:1rem;font-weight:400;color:#888}
+.pricing-card ul{list-style:none;text-align:left;margin:24px 0}
+.pricing-card ul li{padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:.9rem}
+.pricing-card ul li::before{content:'✓ ';color:#10b981;font-weight:bold}
+.tag{display:inline-block;background:#eef2ff;color:#4f46e5;padding:3px 10px;border-radius:6px;font-size:.75rem;font-weight:600}
+.tag-green{background:#ecfdf5;color:#059669}
+.tag-orange{background:#fff7ed;color:#ea580c}
+
+
+.steps{counter-reset:step}
+.step{position:relative;padding-left:60px;margin-bottom:32px}
+.step::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:0;width:40px;height:40px;background:#4f46e5;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem}
+.step h4{font-size:1.1rem;margin-bottom:4px}
+.step p{color:#555;font-size:.9rem}
+.code-block{background:#1e1e2e;color:#a6e3a1;padding:16px 20px;border-radius:8px;font-family:'Fira Code',monospace;font-size:.85rem;overflow-x:auto;margin:12px 0;position:relative}
+.code-block .label{position:absolute;top:8px;right:12px;font-size:.7rem;color:#888;background:#2a2a3e;padding:2px 8px;border-radius:4px}
+.warn{background:#fef3c7;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.9rem}
+.info{background:#eff6ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.9rem}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid #e5e7eb}
+th{background:#f8fafc;font-weight:600;color:#374151}
+tr:hover{background:#fafbff}
+.console-feature{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
+.console-feature .icon{width:40px;height:40px;background:#eef2ff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.console-feature h4{margin-bottom:4px}
+.console-feature p{color:#666;font-size:.85rem}
+.app-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px}
+.app-item .name{font-weight:600;min-width:120px}
+.app-item .desc{color:#666;font-size:.85rem}
+footer{background:#1a1a2e;color:#94a3b8;padding:40px 0;text-align:center;font-size:.85rem}
+@media(max-width:768px){.hero h1{font-size:2rem}.grid-3,.grid-2{grid-template-columns:1fr}.nav-links{display:none}}
+</style>
+
+
 <!-- Hero -->
-<div class="hero">
-    <div class="container">
-        <h1>一个 Key，<span>全部模型</span></h1>
-        <p>PatchTick 将主流 AI 订阅转化为标准 API，兼容 OpenAI / Anthropic 格式，即插即用。</p>
-    </div>
+<section class="hero">
+<div class="container">
+<div class="badge">🎉 新用户注册即送 $5 测试额度</div>
+<h1>订阅转API，一键接入所有模型</h1>
+<p>将 ChatGPT Plus / Claude Pro 等订阅转为标准 API 接口，兼容 OpenAI & Anthropic 格式，即插即用</p>
+<a href="#onboard" class="btn btn-white">立即开通 →</a>
 </div>
+</section>
 
 <!-- Pricing -->
 <section id="pricing">
-    <div class="container">
-        <h2><span class="emoji">💰</span> 定价方案</h2>
-        <p class="section-desc">按量付费，用多少扣多少，无月费绑定</p>
-        <div class="card-grid">
-            <div class="card">
-                <h3>体验版</h3>
-                <div class="price">免费 <small>注册即送</small></div>
-                <ul>
-                    <li>赠送 $1.00 测试额度</li>
-                    <li>全模型可用</li>
-                    <li>有效期 7 天</li>
-                    <li>限速 5 RPM</li>
-                </ul>
-            </div>
-            <div class="card popular">
-                <h3>标准版</h3>
-                <div class="price">$10 <small>起充</small></div>
-                <ul>
-                    <li>按官方费率 ×1.3 计费</li>
-                    <li>全模型无限制</li>
-                    <li>余额永不过期</li>
-                    <li>60 RPM</li>
-                    <li>优先队列</li>
-                </ul>
-            </div>
-            <div class="card">
-                <h3>专业版</h3>
-                <div class="price">$100 <small>起充</small></div>
-                <ul>
-                    <li>按官方费率 ×1.1 计费</li>
-                    <li>全模型无限制</li>
-                    <li>余额永不过期</li>
-                    <li>200 RPM</li>
-                    <li>专属通道 + 优先支持</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+<div class="container">
+<h2>💰 定价方案</h2>
+<p class="subtitle">按量计费，用多少付多少，不捆绑套餐</p>
+<div class="grid-3">
+<div class="card pricing-card">
+<h3>体验版</h3>
+<div class="price">$0<span> 起步</span></div>
+<p style="color:#666;font-size:.9rem">适合个人尝鲜</p>
+<ul>
+<li>注册即送 $5 额度</li>
+<li>GPT-4o / Claude Sonnet</li>
+<li>速率限制：5 RPM</li>
+<li>社区支持</li>
+</ul>
+</div>
+<div class="card pricing-card popular">
+<h3>标准版</h3>
+<div class="price">$0.01<span> / 1K tokens</span></div>
+<p style="color:#666;font-size:.9rem">适合开发者日常</p>
+<ul>
+<li>全部模型无限制</li>
+<li>GPT-4o / Claude Opus / Gemini</li>
+<li>速率限制：60 RPM</li>
+<li>工单支持 (24h)</li>
+<li>团队协作</li>
+</ul>
+</div>
+<div class="card pricing-card">
+<h3>企业版</h3>
+<div class="price">定制<span></span></div>
+<p style="color:#666;font-size:.9rem">适合团队/公司</p>
+<ul>
+<li>专属集群 & SLA 99.9%</li>
+<li>自定义速率限制</li>
+<li>私有部署可选</li>
+<li>专属客户经理</li>
+<li>发票 & 合同</li>
+</ul>
+</div>
+</div>
+</div>
 </section>
+
 
 <!-- Billing -->
-<section id="billing">
-    <div class="container">
-        <h2><span class="emoji">📊</span> 计费说明</h2>
-        <p class="section-desc">透明计费，实时扣费，余额可查</p>
-
-        <div class="alert">
-            🎁 <strong>新用户福利：</strong>注册即送 $1.00 测试额度，无需充值即可体验全部模型。
-        </div>
-
-        <h4 style="margin: 24px 0 12px;">计费规则</h4>
-        <div class="table-wrap">
-            <table>
-                <tr><th>项目</th><th>说明</th></tr>
-                <tr><td>计费单位</td><td>按 Token 数（输入 + 输出分别计价）</td></tr>
-                <tr><td>费率</td><td>官方价格 × 套餐倍率（1.1x ~ 1.3x）</td></tr>
-                <tr><td>扣费时机</td><td>每次请求完成后实时扣除</td></tr>
-                <tr><td>余额不足</td><td>请求将返回 402 错误，不会产生欠费</td></tr>
-                <tr><td>查询余额</td><td>GET /v1/me/balance（Header 带 Key）</td></tr>
-            </table>
-        </div>
-
-        <h4 style="margin: 24px 0 12px;">🤝 邀请返佣（老客户专属）</h4>
-        <div class="table-wrap">
-            <table>
-                <tr><th>条件</th><th>奖励</th></tr>
-                <tr><td>被邀请人首充 ≥ $10</td><td>邀请人获 <strong>10%</strong> 返佣到余额</td></tr>
-                <tr><td>被邀请人首充 ≥ $100</td><td>邀请人获 <strong>15%</strong> 返佣到余额</td></tr>
-                <tr><td>被邀请人</td><td>首充额外赠送 <strong>5%</strong> 金额</td></tr>
-                <tr><td>上限</td><td>单人每月返佣上限 $500</td></tr>
-            </table>
-        </div>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 12px;">
-            邀请码在「开通」步骤中填写，双方同时享受优惠。
-        </p>
-    </div>
+<section id="billing" style="background:#fff">
+<div class="container">
+<h2>📋 计费说明</h2>
+<p class="subtitle">透明计费，多重福利</p>
+<div class="grid-2">
+<div class="card">
+<h3 style="margin-bottom:16px">💡 计费规则</h3>
+<table>
+<tr><th>项目</th><th>说明</th></tr>
+<tr><td>计费单位</td><td>按 Token 数计费（输入+输出）</td></tr>
+<tr><td>最小充值</td><td>$5 起充</td></tr>
+<tr><td>余额有效期</td><td>永不过期</td></tr>
+<tr><td>账单周期</td><td>实时扣费，可随时查看明细</td></tr>
+<tr><td>退款政策</td><td>未消耗余额可申请退款</td></tr>
+</table>
+</div>
+<div class="card">
+<h3 style="margin-bottom:16px">🎁 福利政策</h3>
+<div style="margin-bottom:16px">
+<h4><span class="tag-green tag">新用户</span> 注册赠送</h4>
+<p style="font-size:.9rem;color:#555;margin-top:4px">注册即送 <strong>$5</strong> 测试额度，无需绑卡，注册后自动到账，可体验所有模型</p>
+</div>
+<div>
+<h4><span class="tag-orange tag">老用户</span> 邀请返佣</h4>
+<p style="font-size:.9rem;color:#555;margin-top:4px">邀请好友注册并充值，您获得好友<strong>首充金额 15%</strong> 返佣，好友额外得 <strong>$2</strong> 奖励。返佣实时到账，无上限</p>
+</div>
+<div class="info" style="margin-top:16px">
+💡 邀请码在「控制台 → 邀请返佣」页面获取，好友注册时填写即可绑定
+</div>
+</div>
+</div>
+</div>
 </section>
 
-<!-- Onboarding -->
-<section id="start">
-    <div class="container">
-        <h2><span class="emoji">🚀</span> 开通步骤</h2>
-        <p class="section-desc">3 分钟完成，即刻调用</p>
 
-        <div class="steps">
-            <div class="step">
-                <h4>注册账号</h4>
-                <p>访问 <code>https://patchtick.com/register</code>，用邮箱注册并验证。</p>
-            </div>
-            <div class="step">
-                <h4>填写邀请码（可选）</h4>
-                <p>如果有朋友推荐，在注册页填入邀请码，双方享额外奖励。没有可留空。</p>
-            </div>
-            <div class="step">
-                <h4>选择套餐 & 充值</h4>
-                <p>进入控制台 → 余额 → 选择金额 → 支付（支持 USDT / 支付宝 / 信用卡）。<br>
-                   <em>不充值也有 $1 体验额度。</em></p>
-            </div>
-            <div class="step">
-                <h4>生成 API Key</h4>
-                <p>控制台 → API Keys → 点击「创建新 Key」→ 复制保存。</p>
-                <div class="alert-warn alert">
-                    ⚠️ <strong>重要：</strong>完整 Key 只显示一次！请立即复制保存到安全位置。关闭弹窗后将无法再次查看完整密钥。
-                </div>
-            </div>
-            <div class="step">
-                <h4>配置客户端</h4>
-                <p>将 Key 和 Base URL 填入你的应用（详见下方「接入总览」）。</p>
-            </div>
-            <div class="step">
-                <h4>开始使用 🎉</h4>
-                <p>发送第一条请求，确认返回正常即完成！</p>
-            </div>
-        </div>
-    </div>
+<!-- Onboarding -->
+<section id="onboard">
+<div class="container">
+<h2>🚀 开通步骤</h2>
+<p class="subtitle">3 分钟完成，即刻调用 API</p>
+<div class="card" style="max-width:700px;margin:0 auto">
+<div class="steps">
+<div class="step">
+<h4>注册账号</h4>
+<p>访问 <a href="https://patchtick.com/register">patchtick.com/register</a>，填写邮箱 + 密码，完成邮箱验证</p>
+</div>
+<div class="step">
+<h4>填写邀请码（可选）</h4>
+<p>如果有朋友推荐，在注册页填写邀请码 → 您额外获得 <strong>$2</strong> 奖励额度</p>
+<div class="info">没有邀请码？跳过即可，不影响注册和使用</div>
+</div>
+<div class="step">
+<h4>获取 $5 体验额度</h4>
+<p>注册成功后自动到账，可在控制台「余额」页面查看</p>
+</div>
+<div class="step">
+<h4>创建 API Key</h4>
+<p>进入「控制台 → API Key 管理 → 新建密钥」，设置备注名后点击创建</p>
+<div class="warn">⚠️ <strong>完整 Key 仅显示一次！</strong>请立即复制并安全保存。关闭弹窗后将无法再次查看完整密钥。</div>
+<div class="code-block">
+<span class="label">示例</span>
+sk-pt-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+</div>
+</div>
+<div class="step">
+<h4>配置 Base URL</h4>
+<p>在你的应用/代码中将 Base URL 指向 PatchTick：</p>
+<div class="code-block">
+<span class="label">OpenAI 格式</span>
+https://patchtick.com/v1
+</div>
+<div class="code-block">
+<span class="label">Anthropic 格式</span>
+https://patchtick.com/anthropic
+</div>
+</div>
+<div class="step">
+<h4>开始调用 🎉</h4>
+<p>一切就绪！用你喜欢的客户端或代码发起请求即可</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+
+<!-- Console -->
+<section id="console" style="background:#fff">
+<div class="container">
+<h2>🖥️ 控制台功能</h2>
+<p class="subtitle">一站式管理你的 API 服务</p>
+<div class="grid-2">
+<div class="card">
+<div class="console-feature">
+<div class="icon">🔑</div>
+<div><h4>API Key 管理</h4><p>创建/删除/禁用密钥，设置单Key速率限制，查看每个Key的用量统计</p></div>
+</div>
+<div class="console-feature">
+<div class="icon">💳</div>
+<div><h4>余额与充值</h4><p>实时余额显示，支持支付宝/微信/USDT充值，自动到账，充值记录可导出</p></div>
+</div>
+<div class="console-feature">
+<div class="icon">📊</div>
+<div><h4>用量查询</h4><p>按天/周/月查看 Token 消耗，按模型/Key维度筛选，支持导出 CSV 报表</p></div>
+</div>
+</div>
+<div class="card">
+<div class="console-feature">
+<div class="icon">👥</div>
+<div><h4>团队管理</h4><p>邀请成员加入团队，分配角色权限（管理员/成员/只读），共享额度池</p></div>
+</div>
+<div class="console-feature">
+<div class="icon">📝</div>
+<div><h4>审计日志</h4><p>记录所有关键操作：Key创建/删除、充值、成员变更，可按时间和操作人筛选</p></div>
+</div>
+<div class="console-feature">
+<div class="icon">🎟️</div>
+<div><h4>邀请返佣</h4><p>获取专属邀请码/链接，实时查看邀请人数与返佣金额，返佣自动到余额</p></div>
+</div>
+</div>
+</div>
+</div>
 </section>
 
 
 <!-- Integration -->
 <section id="integration">
-    <div class="container">
-        <h2><span class="emoji">🔌</span> 客户端接入总览</h2>
-        <p class="section-desc">兼容两种主流格式，切换 Base URL 即可</p>
+<div class="container">
+<h2>🔌 客户端接入总览</h2>
+<p class="subtitle">兼容两种主流格式，替换 Base URL 即可使用</p>
+<div class="card" style="max-width:700px;margin:0 auto">
+<h3 style="margin-bottom:16px">Base URL 配置</h3>
+<table>
+<tr><th>格式</th><th>Base URL</th><th>适用场景</th></tr>
+<tr><td><span class="tag">OpenAI</span></td><td><code>https://patchtick.com/v1</code></td><td>ChatGPT 类应用、大部分工具</td></tr>
+<tr><td><span class="tag" style="background:#fef3c7;color:#b45309">Anthropic</span></td><td><code>https://patchtick.com/anthropic</code></td><td>Claude 类应用</td></tr>
+</table>
 
-        <h4 style="margin-bottom: 12px;">Base URL</h4>
-        <div class="table-wrap">
-            <table>
-                <tr><th>格式</th><th>Base URL</th><th>适用场景</th></tr>
-                <tr>
-                    <td><span class="badge badge-green">OpenAI</span></td>
-                    <td><code>https://patchtick.com/v1</code></td>
-                    <td>ChatGPT 类应用、大多数开源工具</td>
-                </tr>
-                <tr>
-                    <td><span class="badge badge-yellow">Anthropic</span></td>
-                    <td><code>https://patchtick.com/anthropic</code></td>
-                    <td>Claude 原生 SDK、需要 Anthropic 格式的工具</td>
-                </tr>
-            </table>
-        </div>
-
-        <h4 style="margin: 24px 0 12px;">快速验证（cURL）</h4>
-        <div class="code-block">
-<span class="comment"># OpenAI 格式</span>
+<h3 style="margin:24px 0 12px">快速验证（curl）</h3>
+<div class="code-block">
+<span class="label">OpenAI 格式</span>
 curl https://patchtick.com/v1/chat/completions \
-  -H "<span class="key">Authorization</span>: Bearer <span class="str">sk-你的Key</span>" \
+  -H "Authorization: Bearer sk-pt-你的key" \
   -H "Content-Type: application/json" \
-  -d '{
-    "<span class="key">model</span>": "<span class="str">gpt-4o</span>",
-    "<span class="key">messages</span>": [{"role":"user","content":"Hi"}]
-  }'
-        </div>
-        <div class="code-block">
-<span class="comment"># Anthropic 格式</span>
+  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"Hi"}]}'
+</div>
+<div class="code-block">
+<span class="label">Anthropic 格式</span>
 curl https://patchtick.com/anthropic/v1/messages \
-  -H "<span class="key">x-api-key</span>: <span class="str">sk-你的Key</span>" \
-  -H "anthropic-version: 2023-06-01" \
+  -H "x-api-key: sk-pt-你的key" \
   -H "Content-Type: application/json" \
-  -d '{
-    "<span class="key">model</span>": "<span class="str">claude-sonnet-4-20250514</span>",
-    "<span class="key">max_tokens</span>": 1024,
-    "<span class="key">messages</span>": [{"role":"user","content":"Hi"}]
-  }'
-        </div>
-    </div>
+  -H "anthropic-version: 2023-06-01" \
+  -d '{"model":"claude-sonnet-4-20250514","max_tokens":1024,"messages":[{"role":"user","content":"Hi"}]}'
+</div>
+</div>
+</div>
 </section>
 
 
 <!-- Apps -->
-<section id="apps">
-    <div class="container">
-        <h2><span class="emoji">📱</span> 可接入应用 & 极简教程</h2>
-        <p class="section-desc">所有支持自定义 API 地址的应用均可接入</p>
+<section id="apps" style="background:#fff">
+<div class="container">
+<h2>📱 可接入应用 & 极简教程</h2>
+<p class="subtitle">改 Base URL + 填 Key，搞定</p>
+<div style="max-width:800px;margin:0 auto">
 
-        <div class="app-item">
-            <h4>ChatBox</h4>
-            <p>设置 → AI 供应商 → OpenAI API → Base URL 填 <code>https://patchtick.com/v1</code> → API Key 填你的 Key → 保存</p>
-        </div>
-        <div class="app-item">
-            <h4>NextChat (ChatGPT Next Web)</h4>
-            <p>设置 → 接口地址填 <code>https://patchtick.com</code> → API Key 填入 → 自定义模型名填需要的模型</p>
-        </div>
-        <div class="app-item">
-            <h4>Lobe Chat</h4>
-            <p>设置 → 语言模型 → OpenAI → 代理地址填 <code>https://patchtick.com/v1</code> → 填入 Key → 选模型</p>
-        </div>
-        <div class="app-item">
-            <h4>Open WebUI</h4>
-            <p>管理面板 → 设置 → 外部连接 → OpenAI API URL 填 <code>https://patchtick.com/v1</code> → 填 Key → 保存</p>
-        </div>
-        <div class="app-item">
-            <h4>Cursor / Windsurf (IDE)</h4>
-            <p>Settings → Models → OpenAI API Key 填入 → Override Base URL 填 <code>https://patchtick.com/v1</code> → 启用模型</p>
-        </div>
-        <div class="app-item">
-            <h4>Claude 官方 SDK (Python)</h4>
-            <p><code>client = Anthropic(api_key="你的Key", base_url="https://patchtick.com/anthropic")</code></p>
-        </div>
-        <div class="app-item">
-            <h4>OpenAI 官方 SDK (Python)</h4>
-            <p><code>client = OpenAI(api_key="你的Key", base_url="https://patchtick.com/v1")</code></p>
-        </div>
-        <div class="app-item">
-            <h4>沉浸式翻译</h4>
-            <p>设置 → 翻译服务 → OpenAI → 自定义 API 地址填 <code>https://patchtick.com/v1/chat/completions</code> → 填 Key</p>
-        </div>
-        <div class="app-item">
-            <h4>Bob (macOS 翻译)</h4>
-            <p>偏好设置 → 服务 → 添加 OpenAI 翻译 → API URL 填 <code>https://patchtick.com</code> → 填 Key → 选模型</p>
-        </div>
-        <div class="app-item">
-            <h4>任何兼容 OpenAI 的应用</h4>
-            <p>找到「API Base URL」或「Endpoint」设置项 → 替换为 <code>https://patchtick.com/v1</code> → 填入你的 Key 即可</p>
-        </div>
-    </div>
+<div class="app-item">
+<div class="name">ChatGPT-Next-Web</div>
+<div class="desc">设置 → API Key 填入 Key → Base URL 填 <code>https://patchtick.com</code> → 保存</div>
+</div>
+<div class="app-item">
+<div class="name">LobeChat</div>
+<div class="desc">设置 → 语言模型 → OpenAI → API Key & Endpoint 填入 → 保存</div>
+</div>
+<div class="app-item">
+<div class="name">Open WebUI</div>
+<div class="desc">管理面板 → Connections → OpenAI URL 改为 <code>https://patchtick.com/v1</code> + Key → 保存</div>
+</div>
+<div class="app-item">
+<div class="name">Cursor</div>
+<div class="desc">Settings → Models → OpenAI API Key 填入 → Override Base URL 填 <code>https://patchtick.com/v1</code></div>
+</div>
+<div class="app-item">
+<div class="name">Cline (VSCode)</div>
+<div class="desc">扩展设置 → API Provider 选 OpenAI Compatible → 填 Key & Base URL → 选模型</div>
+</div>
+<div class="app-item">
+<div class="name">ChatBox</div>
+<div class="desc">设置 → AI模型提供方 选 OpenAI API → API域名 填 <code>https://patchtick.com</code> → 填 Key</div>
+</div>
+<div class="app-item">
+<div class="name">BotGem</div>
+<div class="desc">设置 → Custom API → Endpoint 填 <code>https://patchtick.com/v1</code> → 填 Key → 选模型</div>
+</div>
+<div class="app-item">
+<div class="name">Zed Editor</div>
+<div class="desc">settings.json → "openai" → api_url 填 <code>https://patchtick.com/v1</code> → 环境变量设 Key</div>
+</div>
+<div class="app-item">
+<div class="name">沉浸式翻译</div>
+<div class="desc">设置 → 翻译服务 → OpenAI → 自定义API接口填 <code>https://patchtick.com/v1</code> + Key</div>
+</div>
+<div class="app-item">
+<div class="name">Python (openai库)</div>
+<div class="desc"><code>client = OpenAI(api_key="sk-pt-xxx", base_url="https://patchtick.com/v1")</code></div>
+</div>
+<div class="app-item">
+<div class="name">Node.js (openai库)</div>
+<div class="desc"><code>new OpenAI({ apiKey: "sk-pt-xxx", baseURL: "https://patchtick.com/v1" })</code></div>
+</div>
+<div class="app-item">
+<div class="name">Claude (Python)</div>
+<div class="desc"><code>Anthropic(api_key="sk-pt-xxx", base_url="https://patchtick.com/anthropic")</code></div>
+</div>
+
+</div>
+</div>
 </section>
 
 
 <!-- Error Codes -->
 <section id="errors">
-    <div class="container">
-        <h2><span class="emoji">🚨</span> 错误码参考</h2>
-        <p class="section-desc">遇到错误时对照此表排查</p>
-
-        <div class="table-wrap">
-            <table>
-                <tr>
-                    <th>错误码</th>
-                    <th>含义</th>
-                    <th>处理方式</th>
-                </tr>
-                <tr>
-                    <td><span class="badge badge-red">400</span></td>
-                    <td>请求格式错误</td>
-                    <td>检查 JSON 格式、必填字段（model, messages）是否正确</td>
-                </tr>
-                <tr>
-                    <td><span class="badge badge-red">401</span></td>
-                    <td>认证失败</td>
-                    <td>检查 Key 是否正确、Header 格式是否为 <code>Bearer sk-xxx</code></td>
-                </tr>
-                <tr>
-                    <td><span class="badge badge-red">402</span></td>
-                    <td>余额不足</td>
-                    <td>前往控制台充值后重试</td>
-                </tr>
-                <tr>
-                    <td><span class="badge badge-red">403</span></td>
-                    <td>无权访问该模型</td>
-                    <td>确认套餐是否包含该模型，或联系客服开通</td>
-                </tr>
-                <tr>
-                    <td><span class="badge badge-yellow">404</span></td>
-                    <td>模型不存在</td>
-                    <td>检查 model 字段拼写，参考 <code>GET /v1/models</code> 获取可用列表</td>
-                </tr>
-                <tr>
-                    <td><span class="badge badge-yellow">429</span></td>
-                    <td>请求频率超限</td>
-                    <td>降低请求频率，或升级套餐提高 RPM 上限</td>
-                </tr>
-                <tr>
-                    <td><span class="badge badge-red">500</span></td>
-                    <td>服务器内部错误</td>
-                    <td>稍后重试；若持续出现请联系客服并提供 request-id</td>
-                </tr>
-                <tr>
-                    <td><span class="badge badge-yellow">502</span></td>
-                    <td>上游服务不可用</td>
-                    <td>上游模型暂时故障，等待 1-2 分钟后重试</td>
-                </tr>
-                <tr>
-                    <td><span class="badge badge-yellow">503</span></td>
-                    <td>服务维护中</td>
-                    <td>关注公告，通常几分钟内恢复</td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="alert" style="margin-top: 24px;">
-            💡 <strong>提示：</strong>所有错误响应的 body 中包含 <code>"error": {"message": "...", "code": "..."}</code> 字段，可直接读取具体原因。
-        </div>
-    </div>
+<div class="container">
+<h2>⚠️ 错误码参考</h2>
+<p class="subtitle">遇到错误？对照下表快速解决</p>
+<div class="card" style="overflow-x:auto">
+<table>
+<thead>
+<tr><th>错误码</th><th>含义</th><th>处理方式</th></tr>
+</thead>
+<tbody>
+<tr><td><code>401</code></td><td>认证失败</td><td>检查 API Key 是否正确、是否已被禁用或删除</td></tr>
+<tr><td><code>403</code></td><td>权限不足</td><td>确认 Key 有权访问该模型；检查团队角色权限</td></tr>
+<tr><td><code>429</code></td><td>请求频率超限</td><td>降低请求频率，或升级套餐提升 RPM 限制</td></tr>
+<tr><td><code>402</code></td><td>余额不足</td><td>前往控制台充值后重试</td></tr>
+<tr><td><code>400</code></td><td>请求参数错误</td><td>检查 JSON 格式、model 名称是否正确</td></tr>
+<tr><td><code>404</code></td><td>模型不存在</td><td>确认 model 参数拼写；调用 <code>/v1/models</code> 查看可用列表</td></tr>
+<tr><td><code>500</code></td><td>服务内部错误</td><td>稍后重试；若持续出现请提交工单</td></tr>
+<tr><td><code>502</code></td><td>上游网关错误</td><td>上游服务暂时不可用，等待 30s 后重试</td></tr>
+<tr><td><code>503</code></td><td>服务过载</td><td>当前并发过高，请稍后重试或联系客服扩容</td></tr>
+<tr><td><code>504</code></td><td>请求超时</td><td>减少 max_tokens 或拆分长文本；检查网络</td></tr>
+</tbody>
+</table>
+</div>
+<div class="info" style="max-width:700px;margin:24px auto 0">
+💡 所有错误响应均返回 JSON 格式：<code>{"error":{"code":"xxx","message":"描述"}}</code>，可据此做自动重试逻辑
+</div>
+</div>
 </section>
+
 
 <!-- Footer -->
 <footer>
-    <div class="container">
-        <p>© 2024-2026 PatchTick.com · 一个 Key，全部模型</p>
-        <p style="margin-top: 8px;">客服邮箱：support@patchtick.com</p>
-    </div>
+<div class="container">
+<p style="font-size:1.1rem;color:#fff;margin-bottom:8px">⚡ PatchTick</p>
+<p>订阅转API · 极简接入 · 按量付费</p>
+<p style="margin-top:12px">© 2024-2026 PatchTick. All rights reserved. | <a href="#" style="color:#94a3b8">服务条款</a> | <a href="#" style="color:#94a3b8">隐私政策</a></p>
+</div>
 </footer>
 
 </body>
