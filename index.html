@@ -9,14 +9,21 @@
         (function() {
             try {
                 var saved = localStorage.getItem('theme');
-                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
-            } catch(e) {}
+                if (saved === 'light' || saved === 'dark') {
+                    document.documentElement.setAttribute('data-theme', saved);
+                } else {
+                    // Default: dark
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            } catch(e) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
         })();
     </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root, [data-theme="dark"] {
+        /* Default = dark theme */
+        :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
             --bg: #0f0f1a;
@@ -31,7 +38,8 @@
             --nav-bg: rgba(15,15,26,0.95);
             --code-bg: #0d0d1a;
         }
-        [data-theme="light"] {
+        /* Light theme - higher specificity to override defaults */
+        html[data-theme="light"] {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
             --bg: #ffffff;
@@ -150,6 +158,7 @@
         .code-block .key { color: var(--accent); }
         .code-block .str { color: #a78bfa; }
         [data-theme="light"] .code-block .str { color: #7c3aed; }
+        html[data-theme="light"] .code-block .str { color: #7c3aed; }
 
         /* Table */
         .table-wrap { overflow-x: auto; margin-top: 16px; }
@@ -177,6 +186,70 @@
         .alert-warn {
             background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.3);
         }
+
+        /* Playground */
+        .playground-form {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 24px; margin-top: 16px;
+        }
+        .form-row { margin-bottom: 16px; }
+        .form-row label {
+            display: block; font-size: 0.85rem; color: var(--text-muted);
+            margin-bottom: 6px; font-weight: 500;
+        }
+        .form-row label .required { color: var(--danger); }
+        .form-row input, .form-row textarea, .form-row select {
+            width: 100%; padding: 10px 14px;
+            background: var(--bg); color: var(--text);
+            border: 1px solid var(--border); border-radius: 8px;
+            font-size: 0.9rem; font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .form-row input:focus, .form-row textarea:focus, .form-row select:focus {
+            outline: none; border-color: var(--accent);
+        }
+        .form-row textarea { min-height: 80px; resize: vertical; }
+        .form-row .hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+        .form-row .input-group { display: flex; gap: 8px; }
+        .form-row .input-group input { flex: 1; }
+        .btn-primary {
+            background: var(--primary); color: #fff; border: none;
+            padding: 11px 24px; border-radius: 8px; font-size: 0.95rem;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary {
+            background: transparent; color: var(--text);
+            border: 1px solid var(--border);
+            padding: 9px 16px; border-radius: 8px; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+        .pg-output {
+            margin-top: 20px; padding: 20px;
+            background: var(--bg); border: 1px dashed var(--border);
+            border-radius: 8px; min-height: 120px;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .pg-output img { max-width: 100%; border-radius: 8px; }
+        .pg-output.error { color: var(--danger); border-color: var(--danger); }
+        .pg-output.loading::after {
+            content: ''; width: 32px; height: 32px;
+            border: 3px solid var(--border); border-top-color: var(--accent);
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .pg-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .pg-tab {
+            padding: 10px 18px; cursor: pointer; font-size: 0.9rem;
+            color: var(--text-muted); border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .pg-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
         /* Apps grid */
         .app-item {
@@ -213,6 +286,7 @@
                 <a href="#pricing">定价</a>
                 <a href="#billing">计费</a>
                 <a href="#start">开通</a>
+                <a href="#playground">Playground</a>
                 <a href="#integration">接入</a>
                 <a href="#apps">应用</a>
                 <a href="#errors">错误码</a>
@@ -348,6 +422,100 @@
                 <h4>开始使用 🎉</h4>
                 <p>发送第一条请求，确认返回正常即完成！</p>
             </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Playground -->
+<section id="playground">
+    <div class="container">
+        <h2><span class="emoji">🎨</span> Playground · 在线测试与生成</h2>
+        <p class="section-desc">填入你的 API Key 即刻测试调用是否正常，同时也可以直接用来生成图片</p>
+
+        <div class="playground-form">
+            <div class="pg-tabs">
+                <div class="pg-tab active" data-tab="image">🖼 图像生成</div>
+                <div class="pg-tab" data-tab="chat">💬 文本对话</div>
+            </div>
+
+            <!-- Image generation tab -->
+            <div id="pg-tab-image">
+                <div class="form-row">
+                    <label>Base URL <span class="required">*</span></label>
+                    <input type="text" id="pgBaseUrl" value="https://patchtick.com/v1" />
+                    <div class="hint">默认已填好 PatchTick OpenAI 兼容地址</div>
+                </div>
+                <div class="form-row">
+                    <label>API Key <span class="required">*</span></label>
+                    <input type="password" id="pgApiKey" placeholder="sk-xxxxxxxxxxxxxxxxxx" autocomplete="off" />
+                    <div class="hint">仅在你浏览器中使用，不会上传到我们的服务器</div>
+                </div>
+                <div class="form-row">
+                    <label>模型</label>
+                    <select id="pgModel">
+                        <option value="gpt-image-2" selected>gpt-image-2 (推荐)</option>
+                        <option value="gpt-image-1">gpt-image-1</option>
+                        <option value="dall-e-3">dall-e-3</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>尺寸</label>
+                    <select id="pgSize">
+                        <option value="1024x1024" selected>1024 × 1024 (方形)</option>
+                        <option value="1024x1536">1024 × 1536 (竖图)</option>
+                        <option value="1536x1024">1536 × 1024 (横图)</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>Prompt 提示词 <span class="required">*</span></label>
+                    <textarea id="pgPrompt" placeholder="例如：a cute orange cat sitting on a wooden desk, photorealistic, soft lighting">a cute orange cat sitting on a wooden desk, photorealistic, soft lighting</textarea>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button class="btn-primary" id="pgGenBtn" onclick="pgGenerate()">
+                        <span>✨</span> 生成图片
+                    </button>
+                    <button class="btn-secondary" onclick="pgClearKey()">清除 Key</button>
+                    <span id="pgStatus" style="font-size: 0.85rem; color: var(--text-muted);"></span>
+                </div>
+                <div class="pg-output" id="pgOutput">
+                    点击「生成图片」按钮开始测试
+                </div>
+            </div>
+
+            <!-- Chat tab -->
+            <div id="pg-tab-chat" style="display:none;">
+                <div class="form-row">
+                    <label>Base URL <span class="required">*</span></label>
+                    <input type="text" id="pgChatBaseUrl" value="https://patchtick.com/v1" />
+                </div>
+                <div class="form-row">
+                    <label>API Key <span class="required">*</span></label>
+                    <input type="password" id="pgChatApiKey" placeholder="sk-xxxxxxxxxxxxxxxxxx" autocomplete="off" />
+                </div>
+                <div class="form-row">
+                    <label>模型</label>
+                    <select id="pgChatModel">
+                        <option value="gpt-4o" selected>gpt-4o</option>
+                        <option value="gpt-4o-mini">gpt-4o-mini</option>
+                        <option value="claude-sonnet-4-20250514">claude-sonnet-4</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>消息</label>
+                    <textarea id="pgChatMessage" placeholder="你好，请用中文介绍一下自己">你好，请用中文介绍一下自己</textarea>
+                </div>
+                <button class="btn-primary" onclick="pgChat()">
+                    <span>💬</span> 发送
+                </button>
+                <div class="pg-output" id="pgChatOutput">
+                    点击「发送」开始对话
+                </div>
+            </div>
+        </div>
+
+        <div class="alert" style="margin-top: 16px;">
+            🔒 <strong>隐私保护：</strong>你的 API Key 只在浏览器内存中使用，不会发送到 PatchTick 服务器以外的任何地方，也不会保存在 cookie 或日志里。
         </div>
     </div>
 </section>
@@ -529,29 +697,158 @@ curl https://patchtick.com/anthropic/v1/messages \
 </footer>
 
 <script>
-    // Theme toggle with localStorage persistence
-    (function() {
-        const saved = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = saved || (prefersDark ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', theme);
-    })();
-
     function toggleTheme() {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
+        var html = document.documentElement;
+        var current = html.getAttribute('data-theme') || 'dark';
+        var next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch(e) {}
         updateThemeIcon();
     }
 
     function updateThemeIcon() {
-        const icon = document.getElementById('themeIcon');
-        const current = document.documentElement.getAttribute('data-theme');
+        var icon = document.getElementById('themeIcon');
+        var current = document.documentElement.getAttribute('data-theme') || 'dark';
         if (icon) icon.textContent = current === 'dark' ? '☀️' : '🌙';
     }
 
-    document.addEventListener('DOMContentLoaded', updateThemeIcon);
+    // Attach handler robustly (handles both before/after DOM ready)
+    function bindThemeToggle() {
+        var btn = document.getElementById('themeToggle');
+        if (btn && !btn.dataset.bound) {
+            btn.addEventListener('click', toggleTheme);
+            btn.dataset.bound = '1';
+        }
+        updateThemeIcon();
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindThemeToggle);
+    } else {
+        bindThemeToggle();
+    }
+
+    /* ===================== Playground ===================== */
+    // Tab switching
+    document.addEventListener('click', function(e) {
+        if (e.target.classList && e.target.classList.contains('pg-tab')) {
+            var target = e.target.getAttribute('data-tab');
+            document.querySelectorAll('.pg-tab').forEach(function(t){ t.classList.remove('active'); });
+            e.target.classList.add('active');
+            document.getElementById('pg-tab-image').style.display = target === 'image' ? 'block' : 'none';
+            document.getElementById('pg-tab-chat').style.display = target === 'chat' ? 'block' : 'none';
+        }
+    });
+
+    function pgClearKey() {
+        document.getElementById('pgApiKey').value = '';
+        document.getElementById('pgChatApiKey').value = '';
+        document.getElementById('pgStatus').textContent = '已清除';
+        setTimeout(function(){ document.getElementById('pgStatus').textContent = ''; }, 1500);
+    }
+
+    async function pgGenerate() {
+        var baseUrl = document.getElementById('pgBaseUrl').value.trim().replace(/\/$/, '');
+        var apiKey = document.getElementById('pgApiKey').value.trim();
+        var model = document.getElementById('pgModel').value;
+        var size = document.getElementById('pgSize').value;
+        var prompt = document.getElementById('pgPrompt').value.trim();
+        var output = document.getElementById('pgOutput');
+        var btn = document.getElementById('pgGenBtn');
+
+        if (!apiKey) { showError(output, '请先填写 API Key'); return; }
+        if (!prompt) { showError(output, '请填写 Prompt 提示词'); return; }
+
+        output.className = 'pg-output loading';
+        output.textContent = '';
+        btn.disabled = true;
+
+        try {
+            var resp = await fetch(baseUrl + '/images/generations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apiKey
+                },
+                body: JSON.stringify({
+                    model: model,
+                    prompt: prompt,
+                    size: size,
+                    n: 1
+                })
+            });
+            var data = await resp.json();
+            if (!resp.ok) {
+                var msg = (data.error && data.error.message) || ('HTTP ' + resp.status);
+                showError(output, '❌ 错误：' + msg);
+                return;
+            }
+            output.className = 'pg-output';
+            output.innerHTML = '';
+            var item = data.data && data.data[0];
+            if (item && item.url) {
+                var img = document.createElement('img');
+                img.src = item.url;
+                img.alt = 'generated';
+                output.appendChild(img);
+            } else if (item && item.b64_json) {
+                var img2 = document.createElement('img');
+                img2.src = 'data:image/png;base64,' + item.b64_json;
+                output.appendChild(img2);
+            } else {
+                output.textContent = JSON.stringify(data);
+            }
+        } catch (err) {
+            showError(output, '❌ 请求失败：' + err.message);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function pgChat() {
+        var baseUrl = document.getElementById('pgChatBaseUrl').value.trim().replace(/\/$/, '');
+        var apiKey = document.getElementById('pgChatApiKey').value.trim();
+        var model = document.getElementById('pgChatModel').value;
+        var msg = document.getElementById('pgChatMessage').value.trim();
+        var output = document.getElementById('pgChatOutput');
+
+        if (!apiKey) { showError(output, '请先填写 API Key'); return; }
+        if (!msg) { showError(output, '请输入消息内容'); return; }
+
+        output.className = 'pg-output loading';
+        output.textContent = '';
+
+        try {
+            var resp = await fetch(baseUrl + '/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apiKey
+                },
+                body: JSON.stringify({
+                    model: model,
+                    messages: [{ role: 'user', content: msg }]
+                })
+            });
+            var data = await resp.json();
+            if (!resp.ok) {
+                showError(output, '❌ 错误：' + ((data.error && data.error.message) || ('HTTP ' + resp.status)));
+                return;
+            }
+            output.className = 'pg-output';
+            var content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+            output.style.justifyContent = 'flex-start';
+            output.style.textAlign = 'left';
+            output.style.whiteSpace = 'pre-wrap';
+            output.textContent = content || JSON.stringify(data);
+        } catch (err) {
+            showError(output, '❌ 请求失败：' + err.message);
+        }
+    }
+
+    function showError(el, msg) {
+        el.className = 'pg-output error';
+        el.textContent = msg;
+    }
 </script>
 
 </body>
