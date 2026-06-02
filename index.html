@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PatchTick - Sub2API 智能转发服务</title>
+    <script>
+        // Set theme before page renders to prevent flash
+        (function() {
+            try {
+                var saved = localStorage.getItem('theme');
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+            } catch(e) {}
+        })();
+    </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
+        :root, [data-theme="dark"] {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
             --bg: #0f0f1a;
@@ -18,23 +28,62 @@
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --nav-bg: rgba(15,15,26,0.95);
+            --code-bg: #0d0d1a;
+        }
+        [data-theme="light"] {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg: #ffffff;
+            --card: #f8fafc;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --accent: #0891b2;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --nav-bg: rgba(255,255,255,0.95);
+            --code-bg: #f1f5f9;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             background: var(--bg);
             color: var(--text);
             line-height: 1.7;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         .container { max-width: 960px; margin: 0 auto; padding: 0 20px; }
         nav {
             position: sticky; top: 0; z-index: 100;
-            background: rgba(15,15,26,0.95); backdrop-filter: blur(10px);
+            background: var(--nav-bg); backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border); padding: 16px 0;
+            transition: background 0.3s ease;
         }
         nav .container { display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
         nav a { color: var(--text-muted); text-decoration: none; margin-left: 20px; font-size: 0.9rem; }
         nav a:hover { color: var(--accent); }
+
+        /* Nav buttons */
+        .nav-btn {
+            margin-left: 14px; padding: 7px 14px;
+            border: 1px solid var(--border); border-radius: 6px;
+            background: transparent; color: var(--text);
+            cursor: pointer; font-size: 0.85rem; font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .login-btn {
+            background: var(--primary); color: #fff; border-color: var(--primary);
+        }
+        .login-btn:hover { background: var(--primary-dark); border-color: var(--primary-dark); color: #fff; }
+        .theme-btn {
+            width: 36px; height: 36px; padding: 0;
+            justify-content: center; font-size: 1rem;
+        }
 
         /* Hero */
         .hero {
@@ -91,14 +140,16 @@
 
         /* Code blocks */
         .code-block {
-            background: #0d0d1a; border: 1px solid var(--border);
+            background: var(--code-bg); border: 1px solid var(--border);
             border-radius: 8px; padding: 16px 20px; margin: 12px 0;
             font-family: 'JetBrains Mono', 'Fira Code', monospace;
             font-size: 0.85rem; overflow-x: auto; line-height: 1.6;
+            color: var(--text);
         }
-        .code-block .comment { color: #6b7280; }
+        .code-block .comment { color: var(--text-muted); }
         .code-block .key { color: var(--accent); }
         .code-block .str { color: #a78bfa; }
+        [data-theme="light"] .code-block .str { color: #7c3aed; }
 
         /* Table */
         .table-wrap { overflow-x: auto; margin-top: 16px; }
@@ -144,6 +195,10 @@
         @media (max-width: 640px) {
             .hero h1 { font-size: 1.8rem; }
             .card-grid { grid-template-columns: 1fr; }
+            .nav-text-links { display: none; }
+            nav a { margin-left: 12px; }
+            .logo { font-size: 1.1rem; }
+            .nav-btn { padding: 6px 10px; font-size: 0.8rem; margin-left: 8px; }
         }
 </style>
 </head>
@@ -153,13 +208,19 @@
 <nav>
     <div class="container">
         <div class="logo">⚡ PatchTick</div>
-        <div>
-            <a href="#pricing">定价</a>
-            <a href="#billing">计费</a>
-            <a href="#start">开通</a>
-            <a href="#integration">接入</a>
-            <a href="#apps">应用</a>
-            <a href="#errors">错误码</a>
+        <div class="nav-links">
+            <div class="nav-text-links">
+                <a href="#pricing">定价</a>
+                <a href="#billing">计费</a>
+                <a href="#start">开通</a>
+                <a href="#integration">接入</a>
+                <a href="#apps">应用</a>
+                <a href="#errors">错误码</a>
+            </div>
+            <button class="nav-btn theme-btn" id="themeToggle" onclick="toggleTheme()" title="切换主题" aria-label="切换主题">
+                <span id="themeIcon">🌙</span>
+            </button>
+            <a href="https://patchtick.com/login" class="nav-btn login-btn">登录</a>
         </div>
     </div>
 </nav>
@@ -466,6 +527,32 @@ curl https://patchtick.com/anthropic/v1/messages \
         <p style="margin-top: 8px;">客服邮箱：support@patchtick.com</p>
     </div>
 </footer>
+
+<script>
+    // Theme toggle with localStorage persistence
+    (function() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+    })();
+
+    function toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+        const icon = document.getElementById('themeIcon');
+        const current = document.documentElement.getAttribute('data-theme');
+        if (icon) icon.textContent = current === 'dark' ? '☀️' : '🌙';
+    }
+
+    document.addEventListener('DOMContentLoaded', updateThemeIcon);
+</script>
 
 </body>
 </html>
