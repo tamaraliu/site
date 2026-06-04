@@ -38,21 +38,21 @@
             --nav-bg: rgba(15,15,26,0.95);
             --code-bg: #0d0d1a;
         }
-        /* Light theme - higher specificity to override defaults */
-        html[data-theme="light"] {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --bg: #ffffff;
-            --card: #f8fafc;
-            --border: #e2e8f0;
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --accent: #0891b2;
-            --success: #059669;
-            --warning: #d97706;
-            --danger: #dc2626;
-            --nav-bg: rgba(255,255,255,0.95);
-            --code-bg: #f1f5f9;
+        /* Light theme - !important to guarantee override even with stale CSS cache */
+        html[data-theme="light"], html.theme-light {
+            --primary: #6366f1 !important;
+            --primary-dark: #4f46e5 !important;
+            --bg: #ffffff !important;
+            --card: #f8fafc !important;
+            --border: #e2e8f0 !important;
+            --text: #0f172a !important;
+            --text-muted: #64748b !important;
+            --accent: #0891b2 !important;
+            --success: #059669 !important;
+            --warning: #d97706 !important;
+            --danger: #dc2626 !important;
+            --nav-bg: rgba(255,255,255,0.95) !important;
+            --code-bg: #f1f5f9 !important;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -693,39 +693,59 @@ curl https://patchtick.com/anthropic/v1/messages \
     <div class="container">
         <p>© 2024-2026 PatchTick.com · 一个 Key，全部模型</p>
         <p style="margin-top: 8px;">客服邮箱：support@patchtick.com</p>
+        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">Build: v3 · 主题切换 + Playground</p>
     </div>
 </footer>
 
 <script>
-    function toggleTheme() {
+    /* THEME TOGGLE v3 — robust */
+    console.log('[PatchTick] Theme script v3 loaded');
+
+    window.toggleTheme = function() {
         var html = document.documentElement;
         var current = html.getAttribute('data-theme') || 'dark';
         var next = current === 'dark' ? 'light' : 'dark';
         html.setAttribute('data-theme', next);
+        // Also toggle a class for redundancy
+        html.classList.remove('theme-dark', 'theme-light');
+        html.classList.add('theme-' + next);
         try { localStorage.setItem('theme', next); } catch(e) {}
         updateThemeIcon();
-    }
+        console.log('[PatchTick] Theme switched to:', next);
+    };
 
-    function updateThemeIcon() {
+    window.updateThemeIcon = function() {
         var icon = document.getElementById('themeIcon');
         var current = document.documentElement.getAttribute('data-theme') || 'dark';
         if (icon) icon.textContent = current === 'dark' ? '☀️' : '🌙';
-    }
+    };
 
-    // Attach handler robustly (handles both before/after DOM ready)
+    // Robust binding: works whether DOM is ready or not
     function bindThemeToggle() {
         var btn = document.getElementById('themeToggle');
-        if (btn && !btn.dataset.bound) {
-            btn.addEventListener('click', toggleTheme);
-            btn.dataset.bound = '1';
+        if (btn) {
+            btn.onclick = window.toggleTheme;  // direct property = always wins
+            console.log('[PatchTick] Theme button bound');
+        } else {
+            console.warn('[PatchTick] Theme button not found yet, retrying...');
+            setTimeout(bindThemeToggle, 100);
+            return;
         }
-        updateThemeIcon();
+        window.updateThemeIcon();
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', bindThemeToggle);
     } else {
         bindThemeToggle();
     }
+    // Also use event delegation as fallback
+    document.addEventListener('click', function(e) {
+        var t = e.target;
+        while (t && t !== document) {
+            if (t.id === 'themeToggle') { window.toggleTheme(); e.preventDefault(); return; }
+            t = t.parentNode;
+        }
+    });
 
     /* ===================== Playground ===================== */
     // Tab switching
