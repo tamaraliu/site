@@ -88,6 +88,10 @@
             background: var(--primary); color: #fff; border-color: var(--primary);
         }
         .login-btn:hover { background: var(--primary-dark); border-color: var(--primary-dark); color: #fff; }
+        .register-btn {
+            background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600;
+        }
+        .register-btn:hover { opacity: 0.85; color: #000; }
         .theme-btn {
             width: 36px; height: 36px; padding: 0;
             justify-content: center; font-size: 1rem;
@@ -418,18 +422,19 @@
         <div class="logo">⚡ PatchTick</div>
         <div class="nav-links">
             <div class="nav-text-links">
-                <a href="#pricing">定价</a>
-                <a href="#billing">计费</a>
-                <a href="#start">开通</a>
-                <a href="#playground">Playground</a>
-                <a href="#integration">接入</a>
-                <a href="#apps">应用</a>
-                <a href="#errors">错误码</a>
+                <a href="#pricing" data-i18n="nav.pricing">定价</a>
+                <a href="#billing" data-i18n="nav.billing">计费</a>
+                <a href="#start" data-i18n="nav.start">开通</a>
+                <a href="#playground" data-i18n="nav.playground">Playground</a>
+                <a href="#integration" data-i18n="nav.integration">接入</a>
+                <a href="#apps" data-i18n="nav.apps">应用</a>
+                <a href="#errors" data-i18n="nav.errors">错误码</a>
             </div>
             <button class="nav-btn theme-btn" id="themeToggle" onclick="toggleTheme()" title="切换主题" aria-label="切换主题">
                 <span id="themeIcon">🌙</span>
             </button>
             <a href="https://patchtick.com/login" class="nav-btn login-btn">登录</a>
+            <a href="https://patchtick.com/register" class="nav-btn register-btn">注册</a>
         </div>
     </div>
 </nav>
@@ -437,47 +442,47 @@
 <!-- Hero -->
 <div class="hero">
     <div class="container">
-        <h1>一个 Key，<span>全部模型</span></h1>
-        <p>PatchTick 将主流 AI 订阅转化为标准 API，兼容 OpenAI / Anthropic 格式，即插即用。</p>
+        <h1 data-i18n-html="hero.title">一个 Key，<span>全部模型</span></h1>
+        <p data-i18n="hero.desc">PatchTick 将主流 AI 订阅转化为标准 API，兼容 OpenAI / Anthropic 格式，即插即用。</p>
     </div>
 </div>
 
 <!-- Pricing -->
 <section id="pricing">
     <div class="container">
-        <h2><span class="emoji">💰</span> 定价方案</h2>
-        <p class="section-desc">按量付费，用多少扣多少，无月费绑定</p>
+        <h2><span class="emoji">💰</span> <span data-i18n="pricing.title">定价方案</span></h2>
+        <p class="section-desc" data-i18n="pricing.desc">按量付费，用多少扣多少，无月费绑定</p>
         <div class="card-grid">
             <div class="card">
-                <h3>体验版</h3>
-                <div class="price">免费 <small>注册即送</small></div>
+                <h3 data-i18n="pricing.trial.name">体验版</h3>
+                <div class="price"><span data-i18n="pricing.trial.price">免费</span> <small data-i18n="pricing.trial.note">注册即送</small></div>
                 <ul>
-                    <li>赠送 $1.00 测试额度</li>
-                    <li>全模型可用</li>
-                    <li>有效期 7 天</li>
-                    <li>限速 5 RPM</li>
+                    <li data-i18n="pricing.trial.f1">赠送 $1.00 测试额度</li>
+                    <li data-i18n="pricing.trial.f2">全模型可用</li>
+                    <li data-i18n="pricing.trial.f3">有效期 7 天</li>
+                    <li data-i18n="pricing.trial.f4">限速 5 RPM</li>
                 </ul>
             </div>
             <div class="card popular">
-                <h3>标准版</h3>
-                <div class="price">$10 <small>起充</small></div>
+                <h3 data-i18n="pricing.std.name">标准版</h3>
+                <div class="price">$10 <small data-i18n="pricing.std.note">起充</small></div>
                 <ul>
-                    <li>按官方费率 ×1.3 计费</li>
-                    <li>全模型无限制</li>
-                    <li>余额永不过期</li>
-                    <li>60 RPM</li>
-                    <li>优先队列</li>
+                    <li data-i18n="pricing.std.f1">按官方费率 ×1.3 计费</li>
+                    <li data-i18n="pricing.std.f2">全模型无限制</li>
+                    <li data-i18n="pricing.std.f3">余额永不过期</li>
+                    <li data-i18n="pricing.std.f4">60 RPM</li>
+                    <li data-i18n="pricing.std.f5">优先队列</li>
                 </ul>
             </div>
             <div class="card">
-                <h3>专业版</h3>
-                <div class="price">$100 <small>起充</small></div>
+                <h3 data-i18n="pricing.pro.name">专业版</h3>
+                <div class="price">$100 <small data-i18n="pricing.pro.note">起充</small></div>
                 <ul>
-                    <li>按官方费率 ×1.1 计费</li>
-                    <li>全模型无限制</li>
-                    <li>余额永不过期</li>
-                    <li>200 RPM</li>
-                    <li>专属通道 + 优先支持</li>
+                    <li data-i18n="pricing.pro.f1">按官方费率 ×1.1 计费</li>
+                    <li data-i18n="pricing.pro.f2">全模型无限制</li>
+                    <li data-i18n="pricing.pro.f3">余额永不过期</li>
+                    <li data-i18n="pricing.pro.f4">200 RPM</li>
+                    <li data-i18n="pricing.pro.f5">专属通道 + 优先支持</li>
                 </ul>
             </div>
         </div>
@@ -487,36 +492,36 @@
 <!-- Billing -->
 <section id="billing">
     <div class="container">
-        <h2><span class="emoji">📊</span> 计费说明</h2>
-        <p class="section-desc">透明计费，实时扣费，余额可查</p>
+        <h2><span class="emoji">📊</span> <span data-i18n="billing.title">计费说明</span></h2>
+        <p class="section-desc" data-i18n="billing.desc">透明计费，实时扣费，余额可查</p>
 
         <div class="alert">
-            🎁 <strong>新用户福利：</strong>注册即送 $1.00 测试额度，无需充值即可体验全部模型。
+            🎁 <strong data-i18n="billing.bonus.title">新用户福利：</strong><span data-i18n="billing.bonus.text">注册即送 $1.00 测试额度，无需充值即可体验全部模型。</span>
         </div>
 
-        <h4 style="margin: 24px 0 12px;">计费规则</h4>
+        <h4 style="margin: 24px 0 12px;" data-i18n="billing.rules">计费规则</h4>
         <div class="table-wrap">
             <table>
-                <tr><th>项目</th><th>说明</th></tr>
-                <tr><td>计费单位</td><td>按 Token 数（输入 + 输出分别计价）</td></tr>
-                <tr><td>费率</td><td>官方价格 × 套餐倍率（1.1x ~ 1.3x）</td></tr>
-                <tr><td>扣费时机</td><td>每次请求完成后实时扣除</td></tr>
-                <tr><td>余额不足</td><td>请求将返回 402 错误，不会产生欠费</td></tr>
-                <tr><td>查询余额</td><td>GET /v1/me/balance（Header 带 Key）</td></tr>
+                <tr><th data-i18n="billing.t.item">项目</th><th data-i18n="billing.t.detail">说明</th></tr>
+                <tr><td data-i18n="billing.r1.k">计费单位</td><td data-i18n="billing.r1.v">按 Token 数（输入 + 输出分别计价）</td></tr>
+                <tr><td data-i18n="billing.r2.k">费率</td><td data-i18n="billing.r2.v">官方价格 × 套餐倍率（1.1x ~ 1.3x）</td></tr>
+                <tr><td data-i18n="billing.r3.k">扣费时机</td><td data-i18n="billing.r3.v">每次请求完成后实时扣除</td></tr>
+                <tr><td data-i18n="billing.r4.k">余额不足</td><td data-i18n="billing.r4.v">请求将返回 402 错误，不会产生欠费</td></tr>
+                <tr><td data-i18n="billing.r5.k">查询余额</td><td data-i18n="billing.r5.v">GET /v1/me/balance（Header 带 Key）</td></tr>
             </table>
         </div>
 
-        <h4 style="margin: 24px 0 12px;">🤝 邀请返佣（老客户专属）</h4>
+        <h4 style="margin: 24px 0 12px;" data-i18n="billing.referral">🤝 邀请返佣（老客户专属）</h4>
         <div class="table-wrap">
             <table>
-                <tr><th>条件</th><th>奖励</th></tr>
-                <tr><td>被邀请人首充 ≥ $10</td><td>邀请人获 <strong>10%</strong> 返佣到余额</td></tr>
-                <tr><td>被邀请人首充 ≥ $100</td><td>邀请人获 <strong>15%</strong> 返佣到余额</td></tr>
-                <tr><td>被邀请人</td><td>首充额外赠送 <strong>5%</strong> 金额</td></tr>
-                <tr><td>上限</td><td>单人每月返佣上限 $500</td></tr>
+                <tr><th data-i18n="billing.ref.cond">条件</th><th data-i18n="billing.ref.reward">奖励</th></tr>
+                <tr><td data-i18n="billing.ref.r1.k">被邀请人首充 ≥ $10</td><td data-i18n-html="billing.ref.r1.v">邀请人获 <strong>10%</strong> 返佣到余额</td></tr>
+                <tr><td data-i18n="billing.ref.r2.k">被邀请人首充 ≥ $100</td><td data-i18n-html="billing.ref.r2.v">邀请人获 <strong>15%</strong> 返佣到余额</td></tr>
+                <tr><td data-i18n="billing.ref.r3.k">被邀请人</td><td data-i18n-html="billing.ref.r3.v">首充额外赠送 <strong>5%</strong> 金额</td></tr>
+                <tr><td data-i18n="billing.ref.r4.k">上限</td><td data-i18n="billing.ref.r4.v">单人每月返佣上限 $500</td></tr>
             </table>
         </div>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 12px;">
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 12px;" data-i18n="billing.ref.note">
             邀请码在「开通」步骤中填写，双方同时享受优惠。
         </p>
     </div>
@@ -525,37 +530,37 @@
 <!-- Onboarding -->
 <section id="start">
     <div class="container">
-        <h2><span class="emoji">🚀</span> 开通步骤</h2>
-        <p class="section-desc">3 分钟完成，即刻调用</p>
+        <h2><span class="emoji">🚀</span> <span data-i18n="onboard.title">开通步骤</span></h2>
+        <p class="section-desc" data-i18n="onboard.desc">3 分钟完成，即刻调用</p>
 
         <div class="steps">
             <div class="step">
-                <h4>注册账号</h4>
-                <p>访问 <code>https://patchtick.com/register</code>，用邮箱注册并验证。</p>
+                <h4 data-i18n="onboard.s1.t">注册账号</h4>
+                <p>访问 <a href="https://patchtick.com/register" target="_blank" style="color:var(--accent);text-decoration:underline;font-weight:600;" data-i18n="onboard.s1.link">https://patchtick.com/register</a><span data-i18n="onboard.s1.desc">，用邮箱注册并验证。</span></p>
             </div>
             <div class="step">
-                <h4>填写邀请码（可选）</h4>
-                <p>如果有朋友推荐，在注册页填入邀请码，双方享额外奖励。没有可留空。</p>
+                <h4 data-i18n="onboard.s2.t">填写邀请码（可选）</h4>
+                <p data-i18n="onboard.s2.d">如果有朋友推荐，在注册页填入邀请码，双方享额外奖励。没有可留空。</p>
             </div>
             <div class="step">
-                <h4>选择套餐 & 充值</h4>
-                <p>进入控制台 → 余额 → 选择金额 → 支付（支持 USDT / 支付宝 / 信用卡）。<br>
+                <h4 data-i18n="onboard.s3.t">选择套餐 & 充值</h4>
+                <p data-i18n-html="onboard.s3.d">进入控制台 → 余额 → 选择金额 → 支付（支持 USDT / 支付宝 / 信用卡）。<br>
                    <em>不充值也有 $1 体验额度。</em></p>
             </div>
             <div class="step">
-                <h4>生成 API Key</h4>
-                <p>控制台 → API Keys → 点击「创建新 Key」→ 复制保存。</p>
+                <h4 data-i18n="onboard.s4.t">生成 API Key</h4>
+                <p data-i18n="onboard.s4.d">控制台 → API Keys → 点击「创建新 Key」→ 复制保存。</p>
                 <div class="alert-warn alert">
-                    ⚠️ <strong>重要：</strong>完整 Key 只显示一次！请立即复制保存到安全位置。关闭弹窗后将无法再次查看完整密钥。
+                    ⚠️ <strong data-i18n="onboard.s4.warnT">重要：</strong><span data-i18n="onboard.s4.warnD">完整 Key 只显示一次！请立即复制保存到安全位置。关闭弹窗后将无法再次查看完整密钥。</span>
                 </div>
             </div>
             <div class="step">
-                <h4>配置客户端</h4>
-                <p>将 Key 和 Base URL 填入你的应用（详见下方「接入总览」）。</p>
+                <h4 data-i18n="onboard.s5.t">配置客户端</h4>
+                <p data-i18n="onboard.s5.d">将 Key 和 Base URL 填入你的应用（详见下方「接入总览」）。</p>
             </div>
             <div class="step">
-                <h4>开始使用 🎉</h4>
-                <p>发送第一条请求，确认返回正常即完成！</p>
+                <h4 data-i18n="onboard.s6.t">开始使用 🎉</h4>
+                <p data-i18n="onboard.s6.d">发送第一条请求，确认返回正常即完成！</p>
             </div>
         </div>
     </div>
@@ -565,12 +570,12 @@
 <!-- Playground -->
 <section id="playground">
     <div class="container">
-        <h2><span class="emoji">🎨</span> Playground · 在线测试与生成</h2>
-        <p class="section-desc">参考 <a href="https://github.com/CookSleep/gpt_image_playground" target="_blank" style="color:var(--accent);">CookSleep/gpt_image_playground</a> 设计 · 双栏布局 · 多参考图 · 历史记录</p>
+        <h2><span class="emoji">🎨</span> <span data-i18n="pg.title">Playground · 在线测试与生成</span></h2>
+        <p class="section-desc"><span data-i18n="pg.desc">参考</span> <a href="https://github.com/CookSleep/gpt_image_playground" target="_blank" style="color:var(--accent);">CookSleep/gpt_image_playground</a> <span data-i18n="pg.desc2">设计 · 双栏布局 · 多参考图 · 历史记录</span></p>
 
         <div class="pg-tabs">
-            <div class="pg-tab active" data-tab="image">🖼 图像生成</div>
-            <div class="pg-tab" data-tab="chat">💬 文本对话</div>
+            <div class="pg-tab active" data-tab="image" data-i18n="pg.tab.image">🖼 图像生成</div>
+            <div class="pg-tab" data-tab="chat" data-i18n="pg.tab.chat">💬 文本对话</div>
         </div>
 
         <!-- ============= IMAGE TAB ============= -->
@@ -581,8 +586,8 @@
                     <!-- API Config Panel -->
                     <div class="pg-panel" style="margin-bottom:14px;">
                         <div class="pg-panel-title">
-                            <span>API 配置</span>
-                            <span class="pg-action" id="pgSaveCfg">保存</span>
+                            <span data-i18n="pg.api">API 配置</span>
+                            <span class="pg-action" id="pgSaveCfg" data-i18n="pg.save">保存</span>
                         </div>
                         <div class="pg-row">
                             <div class="pg-label">Base URL <span class="required">*</span></div>
@@ -591,19 +596,19 @@
                         <div class="pg-row">
                             <div class="pg-label">
                                 API Key <span class="required">*</span>
-                                <button class="pg-btn-ghost" onclick="pgClearKey()" style="padding:2px 8px;">清除</button>
+                                <button class="pg-btn-ghost" onclick="pgClearKey()" style="padding:2px 8px;" data-i18n="pg.clear">清除</button>
                             </div>
                             <input type="password" class="pg-input" id="pgApiKey" placeholder="sk-xxxxxxxx" autocomplete="off" />
-                            <div class="pg-hint">仅保存在浏览器本地，不会上传</div>
+                            <div class="pg-hint" data-i18n="pg.hint">仅保存在浏览器本地，不会上传</div>
                         </div>
                     </div>
 
                     <!-- Generation Params Panel -->
                     <div class="pg-panel">
-                        <div class="pg-panel-title">生成参数</div>
+                        <div class="pg-panel-title" data-i18n="pg.params">生成参数</div>
 
                         <div class="pg-row">
-                            <div class="pg-label">模型</div>
+                            <div class="pg-label" data-i18n="pg.model">模型</div>
                             <select class="pg-select" id="pgModel">
                                 <option value="gpt-image-2" selected>gpt-image-2</option>
                                 <option value="gpt-image-1">gpt-image-1</option>
@@ -612,18 +617,18 @@
                         </div>
 
                         <div class="pg-row">
-                            <div class="pg-label">尺寸</div>
+                            <div class="pg-label" data-i18n="pg.size">尺寸</div>
                             <div class="pg-chips" id="pgSizeChips">
                                 <div class="pg-chip" data-val="1024x1024">1024 ×1024</div>
-                                <div class="pg-chip active" data-val="1536x1024">1536 ×1024 横</div>
-                                <div class="pg-chip" data-val="1024x1536">1024 ×1536 竖</div>
+                                <div class="pg-chip active" data-val="1536x1024" data-i18n="pg.size.land">1536 ×1024 横</div>
+                                <div class="pg-chip" data-val="1024x1536" data-i18n="pg.size.port">1024 ×1536 竖</div>
                                 <div class="pg-chip" data-val="2048x2048">2048 ×2048</div>
                                 <div class="pg-chip" data-val="auto">auto</div>
                             </div>
                         </div>
 
                         <div class="pg-row">
-                            <div class="pg-label">质量 Quality</div>
+                            <div class="pg-label" data-i18n="pg.quality">质量 Quality</div>
                             <div class="pg-segment" id="pgQualitySeg">
                                 <button class="seg-btn" data-val="low">low</button>
                                 <button class="seg-btn active" data-val="medium">medium</button>
@@ -633,7 +638,7 @@
                         </div>
 
                         <div class="pg-row">
-                            <div class="pg-label">数量 N <span class="pg-counter" id="pgNCounter">×1</span></div>
+                            <div class="pg-label"><span data-i18n="pg.n">数量 N</span> <span class="pg-counter" id="pgNCounter">×1</span></div>
                             <div class="pg-segment" id="pgNSeg">
                                 <button class="seg-btn active" data-val="1">1</button>
                                 <button class="seg-btn" data-val="2">2</button>
@@ -643,7 +648,7 @@
                         </div>
 
                         <div class="pg-row">
-                            <div class="pg-label">输出格式</div>
+                            <div class="pg-label" data-i18n="pg.fmt">输出格式</div>
                             <div class="pg-segment" id="pgFmtSeg">
                                 <button class="seg-btn active" data-val="png">PNG</button>
                                 <button class="seg-btn" data-val="jpeg">JPEG</button>
@@ -652,18 +657,18 @@
                         </div>
 
                         <div class="pg-row">
-                            <div class="pg-label">背景</div>
+                            <div class="pg-label" data-i18n="pg.bg">背景</div>
                             <div class="pg-segment" id="pgBgSeg">
                                 <button class="seg-btn active" data-val="auto">auto</button>
-                                <button class="seg-btn" data-val="transparent">透明</button>
-                                <button class="seg-btn" data-val="opaque">不透明</button>
+                                <button class="seg-btn" data-val="transparent" data-i18n="pg.bg.trans">透明</button>
+                                <button class="seg-btn" data-val="opaque" data-i18n="pg.bg.opaque">不透明</button>
                             </div>
                         </div>
 
                         <div class="pg-row">
-                            <div class="pg-label">参考图（可选，最多 8 张）</div>
+                            <div class="pg-label" data-i18n="pg.ref">参考图（可选，最多 8 张）</div>
                             <div class="pg-ref-area" id="pgRefArea">
-                                📎 点击或拖拽上传图片
+                                <span data-i18n="pg.ref.upload">📎 点击或拖拽上传图片</span>
                                 <input type="file" id="pgRefInput" accept="image/*" multiple style="display:none;" />
                             </div>
                             <div class="pg-ref-thumbs" id="pgRefThumbs"></div>
@@ -676,11 +681,11 @@
                     <!-- Prompt -->
                     <div class="pg-panel" style="margin-bottom:14px;">
                         <div class="pg-row">
-                            <div class="pg-label">Prompt 提示词 <span class="required">*</span></div>
-                            <textarea class="pg-textarea" id="pgPrompt" placeholder="描述你想生成的图片，越详细越好...&#10;例如：a cute orange cat sitting on a wooden desk, soft window light, photorealistic, 4k">a cute orange cat sitting on a wooden desk, soft window light, photorealistic, 4k</textarea>
+                            <div class="pg-label" data-i18n="pg.prompt">Prompt 提示词 <span class="required">*</span></div>
+                            <textarea class="pg-textarea" id="pgPrompt" data-i18n-placeholder="pg.prompt.ph" placeholder="描述你想生成的图片，越详细越好...">a cute orange cat sitting on a wooden desk, soft window light, photorealistic, 4k</textarea>
                         </div>
                         <button class="pg-btn-primary" id="pgGenBtn" onclick="pgGenerate()">
-                            <span>✨</span> 生成图片
+                            <span>✨</span> <span data-i18n="pg.gen">生成图片</span>
                         </button>
                         <div class="pg-banner" id="pgBanner"></div>
                     </div>
@@ -688,13 +693,13 @@
                     <!-- Output canvas -->
                     <div class="pg-canvas">
                         <div class="pg-canvas-head">
-                            <h4>输出</h4>
-                            <span class="pg-canvas-status" id="pgStatus">就绪</span>
+                            <h4 data-i18n="pg.output">输出</h4>
+                            <span class="pg-canvas-status" id="pgStatus" data-i18n="pg.ready">就绪</span>
                         </div>
                         <div class="pg-canvas-body" id="pgOutput">
                             <div class="pg-empty">
                                 <span class="pg-emoji">🎨</span>
-                                填好 API Key 与提示词，点击「生成图片」开始
+                                <span data-i18n="pg.empty">填好 API Key 与提示词，点击「生成图片」开始</span>
                             </div>
                         </div>
                     </div>
@@ -702,8 +707,8 @@
                     <!-- History -->
                     <div class="pg-panel" style="margin-top:14px;" id="pgHistoryPanel" hidden>
                         <div class="pg-panel-title">
-                            <span>历史记录 (最近 12 张)</span>
-                            <span class="pg-action" onclick="pgClearHistory()">清空</span>
+                            <span data-i18n="pg.history">历史记录 (最近 12 张)</span>
+                            <span class="pg-action" onclick="pgClearHistory()" data-i18n="pg.history.clear">清空</span>
                         </div>
                         <div class="pg-history" id="pgHistory"></div>
                     </div>
@@ -716,7 +721,7 @@
             <div class="pg-grid">
                 <div>
                     <div class="pg-panel">
-                        <div class="pg-panel-title">API 配置</div>
+                        <div class="pg-panel-title" data-i18n="pg.api">API 配置</div>
                         <div class="pg-row">
                             <div class="pg-label">Base URL <span class="required">*</span></div>
                             <input type="text" class="pg-input" id="pgChatBaseUrl" value="https://patchtick.com/v1" />
@@ -726,7 +731,7 @@
                             <input type="password" class="pg-input" id="pgChatApiKey" placeholder="sk-xxxxxxxx" autocomplete="off" />
                         </div>
                         <div class="pg-row">
-                            <div class="pg-label">模型</div>
+                            <div class="pg-label" data-i18n="pg.model">模型</div>
                             <select class="pg-select" id="pgChatModel">
                                 <option value="gpt-4o" selected>gpt-4o</option>
                                 <option value="gpt-4o-mini">gpt-4o-mini</option>
@@ -739,22 +744,22 @@
                 <div>
                     <div class="pg-panel" style="margin-bottom:14px;">
                         <div class="pg-row">
-                            <div class="pg-label">消息</div>
-                            <textarea class="pg-textarea" id="pgChatMessage" placeholder="发送一条消息试试...">你好，请用中文介绍一下自己。</textarea>
+                            <div class="pg-label" data-i18n="pg.msg">消息</div>
+                            <textarea class="pg-textarea" id="pgChatMessage" data-i18n-placeholder="pg.msg.ph" placeholder="发送一条消息试试...">你好，请用中文介绍一下自己。</textarea>
                         </div>
                         <button class="pg-btn-primary" onclick="pgChat()">
-                            <span>💬</span> 发送
+                            <span>💬</span> <span data-i18n="pg.send">发送</span>
                         </button>
                     </div>
                     <div class="pg-canvas">
                         <div class="pg-canvas-head">
-                            <h4>回复</h4>
-                            <span class="pg-canvas-status" id="pgChatStatus">就绪</span>
+                            <h4 data-i18n="pg.reply">回复</h4>
+                            <span class="pg-canvas-status" id="pgChatStatus" data-i18n="pg.ready">就绪</span>
                         </div>
                         <div class="pg-canvas-body" id="pgChatOutput">
                             <div class="pg-empty">
                                 <span class="pg-emoji">💬</span>
-                                填好 API Key 后点击「发送」
+                                <span data-i18n="pg.empty.chat">填好 API Key 后点击「发送」</span>
                             </div>
                         </div>
                     </div>
@@ -763,7 +768,7 @@
         </div>
 
         <div class="alert" style="margin-top: 16px;">
-            🔒 <strong>隐私保护：</strong>API Key 仅保存在你浏览器的本地存储中（localStorage），所有请求直接发往 <code>patchtick.com</code>，不经过任何第三方服务器，也不写入日志。
+            🔒 <strong data-i18n="pg.privacy.t">隐私保护：</strong><span data-i18n="pg.privacy.d">API Key 仅保存在你浏览器的本地存储中（localStorage），所有请求直接发往 patchtick.com，不经过任何第三方服务器，也不写入日志。</span>
         </div>
     </div>
 </section>
@@ -778,27 +783,27 @@
 <!-- Integration -->
 <section id="integration">
     <div class="container">
-        <h2><span class="emoji">🔌</span> 客户端接入总览</h2>
-        <p class="section-desc">兼容两种主流格式，切换 Base URL 即可</p>
+        <h2><span class="emoji">🔌</span> <span data-i18n="int.title">客户端接入总览</span></h2>
+        <p class="section-desc" data-i18n="int.desc">兼容两种主流格式，切换 Base URL 即可</p>
 
         <h4 style="margin-bottom: 12px;">Base URL</h4>
         <div class="table-wrap">
             <table>
-                <tr><th>格式</th><th>Base URL</th><th>适用场景</th></tr>
+                <tr><th data-i18n="int.t.fmt">格式</th><th>Base URL</th><th data-i18n="int.t.scn">适用场景</th></tr>
                 <tr>
                     <td><span class="badge badge-green">OpenAI</span></td>
                     <td><code>https://patchtick.com/v1</code></td>
-                    <td>ChatGPT 类应用、大多数开源工具</td>
+                    <td data-i18n="int.r1">ChatGPT 类应用、大多数开源工具</td>
                 </tr>
                 <tr>
                     <td><span class="badge badge-yellow">Anthropic</span></td>
                     <td><code>https://patchtick.com/anthropic</code></td>
-                    <td>Claude 原生 SDK、需要 Anthropic 格式的工具</td>
+                    <td data-i18n="int.r2">Claude 原生 SDK、需要 Anthropic 格式的工具</td>
                 </tr>
             </table>
         </div>
 
-        <h4 style="margin: 24px 0 12px;">快速验证（cURL）</h4>
+        <h4 style="margin: 24px 0 12px;" data-i18n="int.curl">快速验证（cURL）</h4>
         <div class="code-block">
 <span class="comment"># OpenAI 格式</span>
 curl https://patchtick.com/v1/chat/completions \
@@ -828,28 +833,28 @@ curl https://patchtick.com/anthropic/v1/messages \
 <!-- Apps -->
 <section id="apps">
     <div class="container">
-        <h2><span class="emoji">📱</span> 可接入应用 & 极简教程</h2>
-        <p class="section-desc">所有支持自定义 API 地址的应用均可接入</p>
+        <h2><span class="emoji">📱</span> <span data-i18n="apps.title">可接入应用 & 极简教程</span></h2>
+        <p class="section-desc" data-i18n="apps.desc">所有支持自定义 API 地址的应用均可接入</p>
 
         <div class="app-item">
             <h4>ChatBox</h4>
-            <p>设置 → AI 供应商 → OpenAI API → Base URL 填 <code>https://patchtick.com/v1</code> → API Key 填你的 Key → 保存</p>
+            <p data-i18n-html="apps.chatbox">设置 → AI 供应商 → OpenAI API → Base URL 填 <code>https://patchtick.com/v1</code> → API Key 填你的 Key → 保存</p>
         </div>
         <div class="app-item">
             <h4>NextChat (ChatGPT Next Web)</h4>
-            <p>设置 → 接口地址填 <code>https://patchtick.com</code> → API Key 填入 → 自定义模型名填需要的模型</p>
+            <p data-i18n-html="apps.nextchat">设置 → 接口地址填 <code>https://patchtick.com</code> → API Key 填入 → 自定义模型名填需要的模型</p>
         </div>
         <div class="app-item">
             <h4>Lobe Chat</h4>
-            <p>设置 → 语言模型 → OpenAI → 代理地址填 <code>https://patchtick.com/v1</code> → 填入 Key → 选模型</p>
+            <p data-i18n-html="apps.lobe">设置 → 语言模型 → OpenAI → 代理地址填 <code>https://patchtick.com/v1</code> → 填入 Key → 选模型</p>
         </div>
         <div class="app-item">
             <h4>Open WebUI</h4>
-            <p>管理面板 → 设置 → 外部连接 → OpenAI API URL 填 <code>https://patchtick.com/v1</code> → 填 Key → 保存</p>
+            <p data-i18n-html="apps.openwebui">管理面板 → 设置 → 外部连接 → OpenAI API URL 填 <code>https://patchtick.com/v1</code> → 填 Key → 保存</p>
         </div>
         <div class="app-item">
             <h4>Cursor / Windsurf (IDE)</h4>
-            <p>Settings → Models → OpenAI API Key 填入 → Override Base URL 填 <code>https://patchtick.com/v1</code> → 启用模型</p>
+            <p data-i18n-html="apps.cursor">Settings → Models → OpenAI API Key 填入 → Override Base URL 填 <code>https://patchtick.com/v1</code> → 启用模型</p>
         </div>
         <div class="app-item">
             <h4>Claude 官方 SDK (Python)</h4>
@@ -860,16 +865,16 @@ curl https://patchtick.com/anthropic/v1/messages \
             <p><code>client = OpenAI(api_key="你的Key", base_url="https://patchtick.com/v1")</code></p>
         </div>
         <div class="app-item">
-            <h4>沉浸式翻译</h4>
-            <p>设置 → 翻译服务 → OpenAI → 自定义 API 地址填 <code>https://patchtick.com/v1/chat/completions</code> → 填 Key</p>
+            <h4 data-i18n="apps.imm.title">沉浸式翻译</h4>
+            <p data-i18n-html="apps.imm">设置 → 翻译服务 → OpenAI → 自定义 API 地址填 <code>https://patchtick.com/v1/chat/completions</code> → 填 Key</p>
         </div>
         <div class="app-item">
-            <h4>Bob (macOS 翻译)</h4>
-            <p>偏好设置 → 服务 → 添加 OpenAI 翻译 → API URL 填 <code>https://patchtick.com</code> → 填 Key → 选模型</p>
+            <h4>Bob (macOS)</h4>
+            <p data-i18n-html="apps.bob">偏好设置 → 服务 → 添加 OpenAI 翻译 → API URL 填 <code>https://patchtick.com</code> → 填 Key → 选模型</p>
         </div>
         <div class="app-item">
-            <h4>任何兼容 OpenAI 的应用</h4>
-            <p>找到「API Base URL」或「Endpoint」设置项 → 替换为 <code>https://patchtick.com/v1</code> → 填入你的 Key 即可</p>
+            <h4 data-i18n="apps.any.title">任何兼容 OpenAI 的应用</h4>
+            <p data-i18n-html="apps.any">找到「API Base URL」或「Endpoint」设置项 → 替换为 <code>https://patchtick.com/v1</code> → 填入你的 Key 即可</p>
         </div>
     </div>
 </section>
@@ -878,66 +883,66 @@ curl https://patchtick.com/anthropic/v1/messages \
 <!-- Error Codes -->
 <section id="errors">
     <div class="container">
-        <h2><span class="emoji">🚨</span> 错误码参考</h2>
-        <p class="section-desc">遇到错误时对照此表排查</p>
+        <h2><span class="emoji">🚨</span> <span data-i18n="err.title">错误码参考</span></h2>
+        <p class="section-desc" data-i18n="err.desc">遇到错误时对照此表排查</p>
 
         <div class="table-wrap">
             <table>
                 <tr>
-                    <th>错误码</th>
-                    <th>含义</th>
-                    <th>处理方式</th>
+                    <th data-i18n="err.t.code">错误码</th>
+                    <th data-i18n="err.t.mean">含义</th>
+                    <th data-i18n="err.t.fix">处理方式</th>
                 </tr>
                 <tr>
                     <td><span class="badge badge-red">400</span></td>
-                    <td>请求格式错误</td>
-                    <td>检查 JSON 格式、必填字段（model, messages）是否正确</td>
+                    <td data-i18n="err.400.m">请求格式错误</td>
+                    <td data-i18n="err.400.f">检查 JSON 格式、必填字段（model, messages）是否正确</td>
                 </tr>
                 <tr>
                     <td><span class="badge badge-red">401</span></td>
-                    <td>认证失败</td>
-                    <td>检查 Key 是否正确、Header 格式是否为 <code>Bearer sk-xxx</code></td>
+                    <td data-i18n="err.401.m">认证失败</td>
+                    <td data-i18n-html="err.401.f">检查 Key 是否正确、Header 格式是否为 <code>Bearer sk-xxx</code></td>
                 </tr>
                 <tr>
                     <td><span class="badge badge-red">402</span></td>
-                    <td>余额不足</td>
-                    <td>前往控制台充值后重试</td>
+                    <td data-i18n="err.402.m">余额不足</td>
+                    <td data-i18n="err.402.f">前往控制台充值后重试</td>
                 </tr>
                 <tr>
                     <td><span class="badge badge-red">403</span></td>
-                    <td>无权访问该模型</td>
-                    <td>确认套餐是否包含该模型，或联系客服开通</td>
+                    <td data-i18n="err.403.m">无权访问该模型</td>
+                    <td data-i18n="err.403.f">确认套餐是否包含该模型，或联系客服开通</td>
                 </tr>
                 <tr>
                     <td><span class="badge badge-yellow">404</span></td>
-                    <td>模型不存在</td>
-                    <td>检查 model 字段拼写，参考 <code>GET /v1/models</code> 获取可用列表</td>
+                    <td data-i18n="err.404.m">模型不存在</td>
+                    <td data-i18n-html="err.404.f">检查 model 字段拼写，参考 <code>GET /v1/models</code> 获取可用列表</td>
                 </tr>
                 <tr>
                     <td><span class="badge badge-yellow">429</span></td>
-                    <td>请求频率超限</td>
-                    <td>降低请求频率，或升级套餐提高 RPM 上限</td>
+                    <td data-i18n="err.429.m">请求频率超限</td>
+                    <td data-i18n="err.429.f">降低请求频率，或升级套餐提高 RPM 上限</td>
                 </tr>
                 <tr>
                     <td><span class="badge badge-red">500</span></td>
-                    <td>服务器内部错误</td>
-                    <td>稍后重试；若持续出现请联系客服并提供 request-id</td>
+                    <td data-i18n="err.500.m">服务器内部错误</td>
+                    <td data-i18n="err.500.f">稍后重试；若持续出现请联系客服并提供 request-id</td>
                 </tr>
                 <tr>
                     <td><span class="badge badge-yellow">502</span></td>
-                    <td>上游服务不可用</td>
-                    <td>上游模型暂时故障，等待 1-2 分钟后重试</td>
+                    <td data-i18n="err.502.m">上游服务不可用</td>
+                    <td data-i18n="err.502.f">上游模型暂时故障，等待 1-2 分钟后重试</td>
                 </tr>
                 <tr>
                     <td><span class="badge badge-yellow">503</span></td>
-                    <td>服务维护中</td>
-                    <td>关注公告，通常几分钟内恢复</td>
+                    <td data-i18n="err.503.m">服务维护中</td>
+                    <td data-i18n="err.503.f">关注公告，通常几分钟内恢复</td>
                 </tr>
             </table>
         </div>
 
         <div class="alert" style="margin-top: 24px;">
-            💡 <strong>提示：</strong>所有错误响应的 body 中包含 <code>"error": {"message": "...", "code": "..."}</code> 字段，可直接读取具体原因。
+            💡 <strong data-i18n="err.tip.t">提示：</strong><span data-i18n-html="err.tip.d">所有错误响应的 body 中包含 <code>"error": {"message": "...", "code": "..."}</code> 字段，可直接读取具体原因。</span>
         </div>
     </div>
 </section>
@@ -945,9 +950,9 @@ curl https://patchtick.com/anthropic/v1/messages \
 <!-- Footer -->
 <footer>
     <div class="container">
-        <p>© 2024-2026 PatchTick.com · 一个 Key，全部模型</p>
-        <p style="margin-top: 8px;">客服邮箱：support@patchtick.com</p>
-        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">Build: v4 · Playground 升级版（参考 CookSleep/gpt_image_playground）</p>
+        <p data-i18n="footer.tag">© 2024-2026 PatchTick.com · 一个 Key，全部模型</p>
+        <p style="margin-top: 8px;"><span data-i18n="footer.email">客服邮箱：</span>support@patchtick.com</p>
+        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">Build: v5 · 新增「注册」按钮（直跳）</p>
     </div>
 </footer>
 
