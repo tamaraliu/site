@@ -611,9 +611,8 @@
                             <div class="pg-label" data-i18n="pg.model">模型</div>
                             <select class="pg-select" id="pgModel">
                                 <option value="gpt-image-2" selected>gpt-image-2</option>
-                                <option value="gpt-image-1">gpt-image-1</option>
-                                <option value="dall-e-3">dall-e-3</option>
                             </select>
+                            <div class="pg-hint">当前 Playground 仅支持 gpt-image-2</div>
                         </div>
 
                         <div class="pg-row">
@@ -632,7 +631,6 @@
                             <div class="pg-segment" id="pgQualitySeg">
                                 <button class="seg-btn" data-val="low">low</button>
                                 <button class="seg-btn active" data-val="medium">medium</button>
-                                <button class="seg-btn" data-val="high">high</button>
                                 <button class="seg-btn" data-val="auto">auto</button>
                             </div>
                         </div>
@@ -952,7 +950,7 @@ curl https://patchtick.com/anthropic/v1/messages \
     <div class="container">
         <p data-i18n="footer.tag">© 2024-2026 PatchTick.com · 一个 Key，全部模型</p>
         <p style="margin-top: 8px;"><span data-i18n="footer.email">客服邮箱：</span>support@patchtick.com</p>
-        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">Build: v5 · 新增「注册」按钮（直跳）</p>
+        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">Build: v6 · Playground 仅 gpt-image-2 + quality 去 high</p>
     </div>
 </footer>
 
