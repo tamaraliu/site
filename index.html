@@ -617,58 +617,49 @@
 
                         <div class="pg-row">
                             <div class="pg-label" data-i18n="pg.size">尺寸</div>
-                            <div class="pg-chips" id="pgSizeChips">
-                                <div class="pg-chip" data-val="1024x1024">1024 ×1024</div>
-                                <div class="pg-chip active" data-val="1536x1024" data-i18n="pg.size.land">1536 ×1024 横</div>
-                                <div class="pg-chip" data-val="1024x1536" data-i18n="pg.size.port">1024 ×1536 竖</div>
-                                <div class="pg-chip" data-val="2048x2048">2048 ×2048</div>
-                                <div class="pg-chip" data-val="auto">auto</div>
-                            </div>
+                            <select class="pg-select" id="pgSize">
+                                <option value="1024x1024">1024 × 1024 (方形)</option>
+                                <option value="1536x1024" selected>1536 × 1024 (横图)</option>
+                                <option value="1024x1536">1024 × 1536 (竖图)</option>
+                                <option value="2048x2048">2048 × 2048</option>
+                                <option value="auto">auto (自动)</option>
+                            </select>
                         </div>
 
                         <div class="pg-row">
-                            <div class="pg-label" data-i18n="pg.quality">质量 Quality</div>
-                            <div class="pg-segment" id="pgQualitySeg">
-                                <button class="seg-btn" data-val="low">low</button>
-                                <button class="seg-btn active" data-val="medium">medium</button>
-                                <button class="seg-btn" data-val="auto">auto</button>
-                            </div>
-                        </div>
-
-                        <div class="pg-row">
-                            <div class="pg-label"><span data-i18n="pg.n">数量 N</span> <span class="pg-counter" id="pgNCounter">×1</span></div>
-                            <div class="pg-segment" id="pgNSeg">
-                                <button class="seg-btn active" data-val="1">1</button>
-                                <button class="seg-btn" data-val="2">2</button>
-                                <button class="seg-btn" data-val="3">3</button>
-                                <button class="seg-btn" data-val="4">4</button>
-                            </div>
+                            <div class="pg-label"><span data-i18n="pg.n">数量 N</span></div>
+                            <select class="pg-select" id="pgN">
+                                <option value="1" selected>1 张</option>
+                                <option value="2">2 张</option>
+                                <option value="3">3 张</option>
+                                <option value="4">4 张</option>
+                            </select>
                         </div>
 
                         <div class="pg-row">
                             <div class="pg-label" data-i18n="pg.fmt">输出格式</div>
-                            <div class="pg-segment" id="pgFmtSeg">
-                                <button class="seg-btn active" data-val="png">PNG</button>
-                                <button class="seg-btn" data-val="jpeg">JPEG</button>
-                                <button class="seg-btn" data-val="webp">WebP</button>
-                            </div>
+                            <select class="pg-select" id="pgFmt">
+                                <option value="png" selected>PNG</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="webp">WebP</option>
+                            </select>
                         </div>
 
                         <div class="pg-row">
                             <div class="pg-label" data-i18n="pg.bg">背景</div>
-                            <div class="pg-segment" id="pgBgSeg">
-                                <button class="seg-btn active" data-val="auto">auto</button>
-                                <button class="seg-btn" data-val="transparent" data-i18n="pg.bg.trans">透明</button>
-                                <button class="seg-btn" data-val="opaque" data-i18n="pg.bg.opaque">不透明</button>
-                            </div>
+                            <select class="pg-select" id="pgBg">
+                                <option value="auto" selected>auto (自动)</option>
+                                <option value="transparent">透明</option>
+                                <option value="opaque">不透明</option>
+                            </select>
                         </div>
 
                         <div class="pg-row">
                             <div class="pg-label" data-i18n="pg.ref">参考图（可选，最多 8 张）</div>
-                            <div class="pg-ref-area" id="pgRefArea">
+                            <label class="pg-ref-area" for="pgRefInput" id="pgRefArea">
                                 <span data-i18n="pg.ref.upload">📎 点击或拖拽上传图片</span>
-                                <input type="file" id="pgRefInput" accept="image/*" multiple style="display:none;" />
-                            </div>
+                            </label>
+                            <input type="file" id="pgRefInput" accept="image/*" multiple style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
                             <div class="pg-ref-thumbs" id="pgRefThumbs"></div>
                         </div>
                     </div>
@@ -950,7 +941,7 @@ curl https://patchtick.com/anthropic/v1/messages \
     <div class="container">
         <p data-i18n="footer.tag">© 2024-2026 PatchTick.com · 一个 Key，全部模型</p>
         <p style="margin-top: 8px;"><span data-i18n="footer.email">客服邮箱：</span>support@patchtick.com</p>
-        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">Build: v6 · Playground 仅 gpt-image-2 + quality 去 high</p>
+        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">Build: v7 · 选项改下拉 + 修复参考图上传</p>
     </div>
 </footer>
 
@@ -1004,14 +995,13 @@ curl https://patchtick.com/anthropic/v1/messages \
         }
     });
 
-    /* ===================== Playground v2 (refactored) ===================== */
+    /* ===================== Playground v3 (selects + label-based upload) ===================== */
     var pgState = {
         size: '1536x1024',
-        quality: 'medium',
         n: 1,
         format: 'png',
         background: 'auto',
-        refImages: []  // {dataUrl, name}
+        refImages: []  // {dataUrl, name, file}
     };
 
     // ---- Tab switching ----
@@ -1025,25 +1015,20 @@ curl https://patchtick.com/anthropic/v1/messages \
         }
     });
 
-    // ---- Segment / Chips binding ----
-    function bindSegmented(containerId, key) {
-        var container = document.getElementById(containerId);
-        if (!container) return;
-        container.addEventListener('click', function(e) {
-            var btn = e.target.closest('[data-val]');
-            if (!btn) return;
-            container.querySelectorAll('[data-val]').forEach(function(b){ b.classList.remove('active'); });
-            btn.classList.add('active');
-            var val = btn.getAttribute('data-val');
-            pgState[key] = key === 'n' ? parseInt(val, 10) : val;
-            if (key === 'n') document.getElementById('pgNCounter').textContent = '×' + val;
+    // ---- Select bindings (replaces the old chips/segment bindings) ----
+    function bindSelect(id, key, parser) {
+        var sel = document.getElementById(id);
+        if (!sel) return;
+        // Initialize state from current value
+        pgState[key] = parser ? parser(sel.value) : sel.value;
+        sel.addEventListener('change', function() {
+            pgState[key] = parser ? parser(sel.value) : sel.value;
         });
     }
-    bindSegmented('pgSizeChips', 'size');
-    bindSegmented('pgQualitySeg', 'quality');
-    bindSegmented('pgNSeg', 'n');
-    bindSegmented('pgFmtSeg', 'format');
-    bindSegmented('pgBgSeg', 'background');
+    bindSelect('pgSize', 'size');
+    bindSelect('pgN', 'n', function(v){ return parseInt(v, 10); });
+    bindSelect('pgFmt', 'format');
+    bindSelect('pgBg', 'background');
 
     // ---- API Key persistence ----
     (function loadCfg() {
@@ -1083,18 +1068,20 @@ curl https://patchtick.com/anthropic/v1/messages \
         setTimeout(function() { el.classList.remove('show'); }, 3000);
     }
 
-    // ---- Reference image upload ----
+    // ---- Reference image upload (label[for] makes click natively trigger input) ----
     var refArea = document.getElementById('pgRefArea');
     var refInput = document.getElementById('pgRefInput');
-    refArea.addEventListener('click', function() { refInput.click(); });
-    refArea.addEventListener('dragover', function(e) { e.preventDefault(); refArea.classList.add('drag'); });
-    refArea.addEventListener('dragleave', function() { refArea.classList.remove('drag'); });
-    refArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        refArea.classList.remove('drag');
-        handleRefFiles(e.dataTransfer.files);
-    });
-    refInput.addEventListener('change', function() { handleRefFiles(refInput.files); refInput.value = ''; });
+    if (refArea && refInput) {
+        // Drag-and-drop
+        refArea.addEventListener('dragover', function(e) { e.preventDefault(); refArea.classList.add('drag'); });
+        refArea.addEventListener('dragleave', function() { refArea.classList.remove('drag'); });
+        refArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            refArea.classList.remove('drag');
+            handleRefFiles(e.dataTransfer.files);
+        });
+        refInput.addEventListener('change', function() { handleRefFiles(refInput.files); refInput.value = ''; });
+    }
 
     function handleRefFiles(files) {
         if (!files) return;
@@ -1206,7 +1193,6 @@ curl https://patchtick.com/anthropic/v1/messages \
                 fd.append('prompt', prompt);
                 fd.append('n', String(pgState.n));
                 if (pgState.size !== 'auto') fd.append('size', pgState.size);
-                if (pgState.quality !== 'auto') fd.append('quality', pgState.quality);
                 fd.append('output_format', pgState.format);
                 if (pgState.background !== 'auto') fd.append('background', pgState.background);
                 pgState.refImages.forEach(function(img) {
@@ -1225,7 +1211,6 @@ curl https://patchtick.com/anthropic/v1/messages \
                     output_format: pgState.format
                 };
                 if (pgState.size !== 'auto') body.size = pgState.size;
-                if (pgState.quality !== 'auto') body.quality = pgState.quality;
                 if (pgState.background !== 'auto') body.background = pgState.background;
 
                 resp = await fetch(baseUrl + '/images/generations', {
