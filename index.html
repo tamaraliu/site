@@ -574,11 +574,11 @@
         <p class="section-desc"><span data-i18n="pg.desc">参考</span> <a href="https://github.com/CookSleep/gpt_image_playground" target="_blank" style="color:var(--accent);">CookSleep/gpt_image_playground</a> <span data-i18n="pg.desc2">设计 · 双栏布局 · 多参考图 · 历史记录</span></p>
 
         <div class="pg-tabs">
-            <div class="pg-tab active" data-tab="image" data-i18n="pg.tab.image">🖼 图像生成</div>
-            <div class="pg-tab" data-tab="chat" data-i18n="pg.tab.chat">💬 文本对话</div>
+            <div class="pg-tab active" data-tab="t2i">🎨 文生图</div>
+            <div class="pg-tab" data-tab="i2i">🖼 图生图</div>
         </div>
 
-        <!-- ============= IMAGE TAB ============= -->
+        <!-- ============= IMAGE FORM (shared by t2i / i2i) ============= -->
         <div id="pg-tab-image" class="pg-wrap">
             <div class="pg-grid">
                 <!-- LEFT: Settings -->
@@ -654,10 +654,10 @@
                             </select>
                         </div>
 
-                        <div class="pg-row">
-                            <div class="pg-label" data-i18n="pg.ref">参考图（可选，最多 8 张）</div>
+                        <div class="pg-row" id="pgRefRow">
+                            <div class="pg-label"><span data-i18n="pg.ref">参考图</span> <span style="color:var(--danger);">*</span></div>
                             <label class="pg-ref-area" for="pgRefInput" id="pgRefArea">
-                                <span data-i18n="pg.ref.upload">📎 点击或拖拽上传图片</span>
+                                <span data-i18n="pg.ref.upload">📎 点击或拖拽上传图片（最多 8 张）</span>
                             </label>
                             <input type="file" id="pgRefInput" accept="image/*" multiple style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
                             <div class="pg-ref-thumbs" id="pgRefThumbs"></div>
@@ -705,56 +705,7 @@
             </div>
         </div>
 
-        <!-- ============= CHAT TAB ============= -->
-        <div id="pg-tab-chat" class="pg-wrap" style="display:none;">
-            <div class="pg-grid">
-                <div>
-                    <div class="pg-panel">
-                        <div class="pg-panel-title" data-i18n="pg.api">API 配置</div>
-                        <div class="pg-row">
-                            <div class="pg-label">Base URL <span class="required">*</span></div>
-                            <input type="text" class="pg-input" id="pgChatBaseUrl" value="https://patchtick.com/v1" />
-                        </div>
-                        <div class="pg-row">
-                            <div class="pg-label">API Key <span class="required">*</span></div>
-                            <input type="password" class="pg-input" id="pgChatApiKey" placeholder="sk-xxxxxxxx" autocomplete="off" />
-                        </div>
-                        <div class="pg-row">
-                            <div class="pg-label" data-i18n="pg.model">模型</div>
-                            <select class="pg-select" id="pgChatModel">
-                                <option value="gpt-4o" selected>gpt-4o</option>
-                                <option value="gpt-4o-mini">gpt-4o-mini</option>
-                                <option value="claude-sonnet-4-20250514">claude-sonnet-4</option>
-                                <option value="o1">o1</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="pg-panel" style="margin-bottom:14px;">
-                        <div class="pg-row">
-                            <div class="pg-label" data-i18n="pg.msg">消息</div>
-                            <textarea class="pg-textarea" id="pgChatMessage" data-i18n-placeholder="pg.msg.ph" placeholder="发送一条消息试试...">你好，请用中文介绍一下自己。</textarea>
-                        </div>
-                        <button class="pg-btn-primary" onclick="pgChat()">
-                            <span>💬</span> <span data-i18n="pg.send">发送</span>
-                        </button>
-                    </div>
-                    <div class="pg-canvas">
-                        <div class="pg-canvas-head">
-                            <h4 data-i18n="pg.reply">回复</h4>
-                            <span class="pg-canvas-status" id="pgChatStatus" data-i18n="pg.ready">就绪</span>
-                        </div>
-                        <div class="pg-canvas-body" id="pgChatOutput">
-                            <div class="pg-empty">
-                                <span class="pg-emoji">💬</span>
-                                <span data-i18n="pg.empty.chat">填好 API Key 后点击「发送」</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Chat tab removed in v8 -->
 
         <div class="alert" style="margin-top: 16px;">
             🔒 <strong data-i18n="pg.privacy.t">隐私保护：</strong><span data-i18n="pg.privacy.d">API Key 仅保存在你浏览器的本地存储中（localStorage），所有请求直接发往 patchtick.com，不经过任何第三方服务器，也不写入日志。</span>
@@ -941,7 +892,7 @@ curl https://patchtick.com/anthropic/v1/messages \
     <div class="container">
         <p data-i18n="footer.tag">© 2024-2026 PatchTick.com · 一个 Key，全部模型</p>
         <p style="margin-top: 8px;"><span data-i18n="footer.email">客服邮箱：</span>support@patchtick.com</p>
-        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">Build: v7 · 选项改下拉 + 修复参考图上传</p>
+        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">Build: v8 · 文生图 / 图生图 双标签</p>
     </div>
 </footer>
 
@@ -995,23 +946,34 @@ curl https://patchtick.com/anthropic/v1/messages \
         }
     });
 
-    /* ===================== Playground v3 (selects + label-based upload) ===================== */
+    /* ===================== Playground v8 (T2I + I2I) ===================== */
     var pgState = {
+        mode: 't2i',          // 't2i' = 文生图, 'i2i' = 图生图
         size: '1536x1024',
         n: 1,
         format: 'png',
         background: 'auto',
-        refImages: []  // {dataUrl, name, file}
+        refImages: []         // {dataUrl, name, file}
     };
 
-    // ---- Tab switching ----
+    // ---- Tab switching: t2i vs i2i ----
+    function pgSetMode(mode) {
+        pgState.mode = mode;
+        document.querySelectorAll('.pg-tab').forEach(function(t){
+            t.classList.toggle('active', t.getAttribute('data-tab') === mode);
+        });
+        var refRow = document.getElementById('pgRefRow');
+        if (refRow) refRow.style.display = mode === 'i2i' ? 'block' : 'none';
+        var btn = document.getElementById('pgGenBtn');
+        if (btn) {
+            var label = btn.querySelector('span:last-child');
+            if (label) label.textContent = mode === 'i2i' ? '生成（图生图）' : '生成（文生图）';
+        }
+    }
     document.addEventListener('click', function(e) {
         if (e.target.classList && e.target.classList.contains('pg-tab')) {
             var target = e.target.getAttribute('data-tab');
-            document.querySelectorAll('.pg-tab').forEach(function(t){ t.classList.remove('active'); });
-            e.target.classList.add('active');
-            document.getElementById('pg-tab-image').style.display = target === 'image' ? 'block' : 'none';
-            document.getElementById('pg-tab-chat').style.display = target === 'chat' ? 'block' : 'none';
+            if (target === 't2i' || target === 'i2i') pgSetMode(target);
         }
     });
 
@@ -1036,8 +998,6 @@ curl https://patchtick.com/anthropic/v1/messages \
             var saved = JSON.parse(localStorage.getItem('pg_cfg') || '{}');
             if (saved.baseUrl) document.getElementById('pgBaseUrl').value = saved.baseUrl;
             if (saved.apiKey) document.getElementById('pgApiKey').value = saved.apiKey;
-            if (saved.chatBaseUrl) document.getElementById('pgChatBaseUrl').value = saved.chatBaseUrl;
-            if (saved.chatApiKey) document.getElementById('pgChatApiKey').value = saved.chatApiKey;
         } catch(e) {}
     })();
 
@@ -1045,9 +1005,7 @@ curl https://patchtick.com/anthropic/v1/messages \
         try {
             localStorage.setItem('pg_cfg', JSON.stringify({
                 baseUrl: document.getElementById('pgBaseUrl').value,
-                apiKey: document.getElementById('pgApiKey').value,
-                chatBaseUrl: document.getElementById('pgChatBaseUrl').value,
-                chatApiKey: document.getElementById('pgChatApiKey').value
+                apiKey: document.getElementById('pgApiKey').value
             }));
             pgBanner('已保存到本地浏览器', 'success');
         } catch(e) { pgBanner('保存失败：' + e.message, 'error'); }
@@ -1055,7 +1013,6 @@ curl https://patchtick.com/anthropic/v1/messages \
 
     function pgClearKey() {
         document.getElementById('pgApiKey').value = '';
-        document.getElementById('pgChatApiKey').value = '';
         try { localStorage.removeItem('pg_cfg'); } catch(e) {}
         pgBanner('Key 已清除', 'success');
     }
@@ -1171,23 +1128,24 @@ curl https://patchtick.com/anthropic/v1/messages \
 
         if (!apiKey) { pgBanner('请先填写 API Key', 'error'); return; }
         if (!prompt) { pgBanner('请填写 Prompt', 'error'); return; }
+        if (pgState.mode === 'i2i' && pgState.refImages.length === 0) {
+            pgBanner('图生图模式需要至少上传 1 张参考图', 'error');
+            return;
+        }
 
-        // Loader
         output.innerHTML = '';
         var loader = document.createElement('div');
         loader.className = 'pg-loader';
-        loader.innerHTML = '<div class="pg-spinner"></div><div>正在生成中，模型推理可能需要 10-60 秒...</div>';
+        var hint = pgState.mode === 'i2i' ? '正在编辑图片，模型推理可能需要 10-60 秒...' : '正在生成图片，模型推理可能需要 10-60 秒...';
+        loader.innerHTML = '<div class="pg-spinner"></div><div>' + hint + '</div>';
         output.appendChild(loader);
         btn.disabled = true;
-        status.textContent = '生成中...';
+        status.textContent = pgState.mode === 'i2i' ? '编辑中...' : '生成中...';
         var t0 = Date.now();
 
         try {
-            var hasRefs = pgState.refImages.length > 0;
             var resp;
-
-            if (hasRefs) {
-                // Use /images/edits with multipart
+            if (pgState.mode === 'i2i') {
                 var fd = new FormData();
                 fd.append('model', model);
                 fd.append('prompt', prompt);
@@ -1281,58 +1239,13 @@ curl https://patchtick.com/anthropic/v1/messages \
         container.innerHTML = '<div class="pg-empty" style="color:var(--danger);">' + msg + '</div>';
     }
 
-    // ---- Chat ----
-    async function pgChat() {
-        var baseUrl = document.getElementById('pgChatBaseUrl').value.trim().replace(/\/$/, '');
-        var apiKey = document.getElementById('pgChatApiKey').value.trim();
-        var model = document.getElementById('pgChatModel').value;
-        var msg = document.getElementById('pgChatMessage').value.trim();
-        var output = document.getElementById('pgChatOutput');
-        var status = document.getElementById('pgChatStatus');
+    // ---- Chat removed in v8 ----
 
-        if (!apiKey) { output.innerHTML = '<div class="pg-empty" style="color:var(--danger);">请先填写 API Key</div>'; return; }
-        if (!msg) { output.innerHTML = '<div class="pg-empty" style="color:var(--danger);">请输入消息</div>'; return; }
-
-        output.innerHTML = '<div class="pg-loader"><div class="pg-spinner"></div><div>思考中...</div></div>';
-        status.textContent = '请求中...';
-        var t0 = Date.now();
-
-        try {
-            var resp = await fetch(baseUrl + '/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + apiKey
-                },
-                body: JSON.stringify({
-                    model: model,
-                    messages: [{ role: 'user', content: msg }]
-                })
-            });
-            var data = await resp.json();
-            if (!resp.ok) {
-                output.innerHTML = '<div class="pg-empty" style="color:var(--danger);">❌ ' + ((data.error && data.error.message) || ('HTTP ' + resp.status)) + '</div>';
-                status.textContent = '失败';
-                return;
-            }
-            var content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-            output.innerHTML = '';
-            var pre = document.createElement('div');
-            pre.style.cssText = 'white-space:pre-wrap;text-align:left;width:100%;line-height:1.7;font-size:0.9rem;';
-            pre.textContent = content || JSON.stringify(data);
-            output.appendChild(pre);
-            var elapsed = ((Date.now() - t0) / 1000).toFixed(1);
-            var usage = data.usage ? ' · ' + data.usage.total_tokens + ' tokens' : '';
-            status.textContent = '完成 · ' + elapsed + 's' + usage;
-        } catch (err) {
-            output.innerHTML = '<div class="pg-empty" style="color:var(--danger);">❌ ' + err.message + '</div>';
-            status.textContent = '失败';
-        }
-    }
+    // Init mode
+    pgSetMode('t2i');
 
     // Expose globally
     window.pgGenerate = pgGenerate;
-    window.pgChat = pgChat;
     window.pgClearKey = pgClearKey;
     window.pgClearHistory = pgClearHistory;
     window.pgOpenLightbox = pgOpenLightbox;
