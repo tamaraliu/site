@@ -390,6 +390,18 @@
             .pg-canvas { min-height: 360px; }
         }
 
+        /* Chat conversation bubbles */
+        .pg-msg { margin-bottom: 14px; display: flex; }
+        .pg-msg.user { justify-content: flex-end; }
+        .pg-msg.assistant { justify-content: flex-start; }
+        .pg-msg .pg-bubble {
+            max-width: 80%; padding: 10px 14px; border-radius: 12px;
+            font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap;
+        }
+        .pg-msg.user .pg-bubble { background: var(--primary); color: #fff; }
+        .pg-msg.assistant .pg-bubble { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+        .pg-msg.system .pg-bubble { background: rgba(34,211,238,0.08); color: var(--text-muted); border: 1px dashed var(--border); font-size: 0.8rem; max-width: 100%; }
+
         /* Apps grid */
         .app-item {
             background: var(--card); border: 1px solid var(--border);
@@ -457,7 +469,7 @@
                 <h3 data-i18n="pricing.trial.name">体验版</h3>
                 <div class="price"><span data-i18n="pricing.trial.price">免费</span> <small data-i18n="pricing.trial.note">注册即送</small></div>
                 <ul>
-                    <li>赠送 $3.00 测试额度</li>
+                    <li>赠送 $1.00 测试额度</li>
                     <li>全模型可用</li>
                     <li>有效期 7 天</li>
                     <li>限速 5 RPM</li>
@@ -496,7 +508,7 @@
         <p class="section-desc" data-i18n="billing.desc">透明计费，实时扣费，余额可查</p>
 
         <div class="alert">
-            🎁 <strong data-i18n="billing.bonus.title">新用户福利：</strong><span>注册即送 $3.00 测试额度，无需充值即可体验全部模型。</span>
+            🎁 <strong data-i18n="billing.bonus.title">新用户福利：</strong><span>注册即送 $1.00 测试额度，无需充值即可体验全部模型。</span>
         </div>
 
         <h4 style="margin: 24px 0 12px;" data-i18n="billing.rules">计费规则</h4>
@@ -520,9 +532,6 @@
                 <tr><td>上限</td><td>单人每月返佣上限 $500</td></tr>
             </table>
         </div>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 12px;" data-i18n="billing.ref.note">
-            邀请码在「开通」步骤中填写，双方同时享受优惠。
-        </p>
     </div>
 </section>
 
@@ -539,12 +548,12 @@
             </div>
             <div class="step">
                 <h4 data-i18n="onboard.s2.t">填写邀请码（可选）</h4>
-                <p data-i18n="onboard.s2.d">如果有朋友推荐，在注册页填入邀请码，双方享额外奖励。没有可留空。</p>
+                <p data-i18n="onboard.s2.d">如果有朋友推荐，在注册页填入邀请码即可。没有可留空。</p>
             </div>
             <div class="step">
                 <h4 data-i18n="onboard.s3.t">选择套餐 & 充值</h4>
                 <p data-i18n-html="onboard.s3.d">进入控制台 → 余额 → 选择金额 → 支付（支持 USDT / 支付宝 / 信用卡）。<br>
-                   <em>不充值也有 $3 体验额度。</em></p>
+                   <em>不充值也有 $1 体验额度。</em></p>
             </div>
             <div class="step">
                 <h4 data-i18n="onboard.s4.t">生成 API Key</h4>
@@ -573,8 +582,8 @@
         <p class="section-desc"><span data-i18n="pg.desc">参考</span> <a href="https://github.com/CookSleep/gpt_image_playground" target="_blank" style="color:var(--accent);">CookSleep/gpt_image_playground</a> <span data-i18n="pg.desc2">设计 · 双栏布局 · 多参考图 · 历史记录</span></p>
 
         <div class="pg-tabs">
-            <div class="pg-tab active" data-tab="t2i">🎨 文生图</div>
-            <div class="pg-tab" data-tab="i2i">🖼 图生图</div>
+            <div class="pg-tab active" data-tab="image">🎨 AI 生图</div>
+            <div class="pg-tab" data-tab="chat">💬 AI 会话</div>
         </div>
 
         <!-- ============= IMAGE FORM (shared by t2i / i2i) ============= -->
@@ -653,10 +662,10 @@
                             </select>
                         </div>
 
-                        <div class="pg-row" id="pgRefRow">
-                            <div class="pg-label"><span data-i18n="pg.ref">参考图</span> <span style="color:var(--danger);">*</span></div>
+                        <div class="pg-row" id="pgRefRow" style="display:none;">
+                            <div class="pg-label"><span>参考图（保留以备扩展）</span></div>
                             <label class="pg-ref-area" for="pgRefInput" id="pgRefArea">
-                                <span data-i18n="pg.ref.upload">📎 点击或拖拽上传图片（最多 8 张）</span>
+                                <span>📎 点击或拖拽上传图片（最多 8 张）</span>
                             </label>
                             <input type="file" id="pgRefInput" accept="image/*" multiple style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
                             <div class="pg-ref-thumbs" id="pgRefThumbs"></div>
@@ -704,7 +713,94 @@
             </div>
         </div>
 
-        <!-- Chat tab removed in v8 -->
+        <!-- ============= AI 会话 (chat) tab ============= -->
+        <div id="pg-tab-chat" class="pg-wrap" style="display:none;">
+            <div class="pg-grid">
+                <!-- LEFT: API config + model -->
+                <div>
+                    <div class="pg-panel" style="margin-bottom:14px;">
+                        <div class="pg-panel-title">
+                            <span>API 配置</span>
+                            <span class="pg-action" id="pgChatSaveCfg">保存</span>
+                        </div>
+                        <div class="pg-row">
+                            <div class="pg-label">Base URL <span class="required">*</span></div>
+                            <input type="text" class="pg-input" id="pgChatBaseUrl" value="https://patchtick.com/v1" />
+                        </div>
+                        <div class="pg-row">
+                            <div class="pg-label">
+                                API Key <span class="required">*</span>
+                                <button class="pg-btn-ghost" onclick="pgChatClearKey()" style="padding:2px 8px;">清除</button>
+                            </div>
+                            <input type="password" class="pg-input" id="pgChatApiKey" placeholder="sk-xxxxxxxx" autocomplete="off" />
+                            <div class="pg-hint">仅保存在浏览器本地，不会上传</div>
+                        </div>
+                    </div>
+
+                    <div class="pg-panel">
+                        <div class="pg-panel-title">会话参数</div>
+                        <div class="pg-row">
+                            <div class="pg-label">模型</div>
+                            <select class="pg-select" id="pgChatModel">
+                                <option value="gpt-4o" selected>gpt-4o</option>
+                                <option value="gpt-4o-mini">gpt-4o-mini</option>
+                                <option value="gpt-4-turbo">gpt-4-turbo</option>
+                                <option value="o1">o1</option>
+                                <option value="o1-mini">o1-mini</option>
+                                <option value="claude-sonnet-4-20250514">claude-sonnet-4</option>
+                                <option value="claude-opus-4-20250514">claude-opus-4</option>
+                                <option value="claude-3-5-sonnet-20241022">claude-3.5-sonnet</option>
+                                <option value="gemini-2.0-flash-exp">gemini-2.0-flash</option>
+                                <option value="deepseek-chat">deepseek-chat</option>
+                            </select>
+                        </div>
+                        <div class="pg-row">
+                            <div class="pg-label">温度 Temperature</div>
+                            <select class="pg-select" id="pgChatTemp">
+                                <option value="0">0 (最稳定)</option>
+                                <option value="0.3">0.3</option>
+                                <option value="0.7" selected>0.7 (默认)</option>
+                                <option value="1">1.0 (更有创意)</option>
+                            </select>
+                        </div>
+                        <div class="pg-row">
+                            <div class="pg-label">系统提示词 System</div>
+                            <textarea class="pg-textarea" id="pgChatSystem" placeholder="（可选）你是一个有帮助的中文助手..." style="min-height:60px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Conversation -->
+                <div>
+                    <div class="pg-canvas" style="margin-bottom:14px; min-height: 380px;">
+                        <div class="pg-canvas-head">
+                            <h4>对话</h4>
+                            <span class="pg-canvas-status" id="pgChatStatus">就绪</span>
+                        </div>
+                        <div class="pg-canvas-body" id="pgChatOutput" style="display:block;align-items:stretch;justify-content:flex-start;">
+                            <div class="pg-empty" style="margin:auto;">
+                                <span class="pg-emoji">💬</span>
+                                填好 API Key 后输入消息，点击「发送」
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pg-panel">
+                        <div class="pg-row">
+                            <div class="pg-label">消息</div>
+                            <textarea class="pg-textarea" id="pgChatMessage" placeholder="发送一条消息试试...">你好，请用中文介绍一下你自己。</textarea>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="pg-btn-primary" id="pgChatSendBtn" onclick="pgChat()" style="flex:1;">
+                                <span>💬</span> <span>发送</span>
+                            </button>
+                            <button class="pg-btn-ghost" onclick="pgChatReset()" style="padding:11px 16px;">清空对话</button>
+                        </div>
+                        <div class="pg-banner" id="pgChatBanner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="alert" style="margin-top: 16px;">
             🔒 <strong data-i18n="pg.privacy.t">隐私保护：</strong><span data-i18n="pg.privacy.d">API Key 仅保存在你浏览器的本地存储中（localStorage），所有请求直接发往 patchtick.com，不经过任何第三方服务器，也不写入日志。</span>
@@ -907,7 +1003,7 @@ curl https://patchtick.com/anthropic/v1/messages \
     <div class="container">
         <p data-i18n="footer.tag">© 2024-2026 PatchTick.com · 一个 Key，全部模型</p>
         <p style="margin-top: 8px;"><span data-i18n="footer.email">客服邮箱：</span>286218243@qq.com</p>
-        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">Build: v9 · 调价 $3 / 邮箱 / 简化计费 / 新增 4 个应用</p>
+        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">Build: v10 · 还原 $1 / 删除双方提示 / Playground 改 AI 生图 + AI 会话</p>
     </div>
 </footer>
 
@@ -961,34 +1057,26 @@ curl https://patchtick.com/anthropic/v1/messages \
         }
     });
 
-    /* ===================== Playground v8 (T2I + I2I) ===================== */
+    /* ===================== Playground v10 (image + chat tabs) ===================== */
     var pgState = {
-        mode: 't2i',          // 't2i' = 文生图, 'i2i' = 图生图
         size: '1536x1024',
         n: 1,
         format: 'png',
         background: 'auto',
-        refImages: []         // {dataUrl, name, file}
+        refImages: []
     };
+    var pgChatHistory = [];  // [{role:'user'|'assistant'|'system', content:'...'}]
 
-    // ---- Tab switching: t2i vs i2i ----
-    function pgSetMode(mode) {
-        pgState.mode = mode;
-        document.querySelectorAll('.pg-tab').forEach(function(t){
-            t.classList.toggle('active', t.getAttribute('data-tab') === mode);
-        });
-        var refRow = document.getElementById('pgRefRow');
-        if (refRow) refRow.style.display = mode === 'i2i' ? 'block' : 'none';
-        var btn = document.getElementById('pgGenBtn');
-        if (btn) {
-            var label = btn.querySelector('span:last-child');
-            if (label) label.textContent = mode === 'i2i' ? '生成（图生图）' : '生成（文生图）';
-        }
-    }
+    // ---- Tab switching: image vs chat ----
     document.addEventListener('click', function(e) {
         if (e.target.classList && e.target.classList.contains('pg-tab')) {
             var target = e.target.getAttribute('data-tab');
-            if (target === 't2i' || target === 'i2i') pgSetMode(target);
+            if (target !== 'image' && target !== 'chat') return;
+            document.querySelectorAll('.pg-tab').forEach(function(t){
+                t.classList.toggle('active', t.getAttribute('data-tab') === target);
+            });
+            document.getElementById('pg-tab-image').style.display = target === 'image' ? 'block' : 'none';
+            document.getElementById('pg-tab-chat').style.display = target === 'chat' ? 'block' : 'none';
         }
     });
 
@@ -1131,7 +1219,7 @@ curl https://patchtick.com/anthropic/v1/messages \
         document.getElementById('pgLightbox').classList.remove('show');
     }
 
-    // ---- Generate image ----
+    // ---- Generate image (text-to-image only) ----
     async function pgGenerate() {
         var baseUrl = document.getElementById('pgBaseUrl').value.trim().replace(/\/$/, '');
         var apiKey = document.getElementById('pgApiKey').value.trim();
@@ -1143,58 +1231,34 @@ curl https://patchtick.com/anthropic/v1/messages \
 
         if (!apiKey) { pgBanner('请先填写 API Key', 'error'); return; }
         if (!prompt) { pgBanner('请填写 Prompt', 'error'); return; }
-        if (pgState.mode === 'i2i' && pgState.refImages.length === 0) {
-            pgBanner('图生图模式需要至少上传 1 张参考图', 'error');
-            return;
-        }
 
         output.innerHTML = '';
         var loader = document.createElement('div');
         loader.className = 'pg-loader';
-        var hint = pgState.mode === 'i2i' ? '正在编辑图片，模型推理可能需要 10-60 秒...' : '正在生成图片，模型推理可能需要 10-60 秒...';
-        loader.innerHTML = '<div class="pg-spinner"></div><div>' + hint + '</div>';
+        loader.innerHTML = '<div class="pg-spinner"></div><div>正在生成图片，模型推理可能需要 10-60 秒...</div>';
         output.appendChild(loader);
         btn.disabled = true;
-        status.textContent = pgState.mode === 'i2i' ? '编辑中...' : '生成中...';
+        status.textContent = '生成中...';
         var t0 = Date.now();
 
         try {
-            var resp;
-            if (pgState.mode === 'i2i') {
-                var fd = new FormData();
-                fd.append('model', model);
-                fd.append('prompt', prompt);
-                fd.append('n', String(pgState.n));
-                if (pgState.size !== 'auto') fd.append('size', pgState.size);
-                fd.append('output_format', pgState.format);
-                if (pgState.background !== 'auto') fd.append('background', pgState.background);
-                pgState.refImages.forEach(function(img) {
-                    fd.append('image[]', img.file, img.name);
-                });
-                resp = await fetch(baseUrl + '/images/edits', {
-                    method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + apiKey },
-                    body: fd
-                });
-            } else {
-                var body = {
-                    model: model,
-                    prompt: prompt,
-                    n: pgState.n,
-                    output_format: pgState.format
-                };
-                if (pgState.size !== 'auto') body.size = pgState.size;
-                if (pgState.background !== 'auto') body.background = pgState.background;
+            var body = {
+                model: model,
+                prompt: prompt,
+                n: pgState.n,
+                output_format: pgState.format
+            };
+            if (pgState.size !== 'auto') body.size = pgState.size;
+            if (pgState.background !== 'auto') body.background = pgState.background;
 
-                resp = await fetch(baseUrl + '/images/generations', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + apiKey
-                    },
-                    body: JSON.stringify(body)
-                });
-            }
+            var resp = await fetch(baseUrl + '/images/generations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apiKey
+                },
+                body: JSON.stringify(body)
+            });
 
             var data = await resp.json();
             if (!resp.ok) {
@@ -1254,10 +1318,159 @@ curl https://patchtick.com/anthropic/v1/messages \
         container.innerHTML = '<div class="pg-empty" style="color:var(--danger);">' + msg + '</div>';
     }
 
-    // ---- Chat removed in v8 ----
+    // ---- AI 会话 (chat) ----
+    function pgChatBanner(msg, type) {
+        var el = document.getElementById('pgChatBanner');
+        if (!el) return;
+        el.textContent = msg;
+        el.className = 'pg-banner show ' + (type || '');
+        setTimeout(function(){ el.classList.remove('show'); }, 3000);
+    }
 
-    // Init mode
-    pgSetMode('t2i');
+    // Save / clear chat config separately
+    (function loadChatCfg() {
+        try {
+            var saved = JSON.parse(localStorage.getItem('pg_chat_cfg') || '{}');
+            if (saved.baseUrl) document.getElementById('pgChatBaseUrl').value = saved.baseUrl;
+            if (saved.apiKey) document.getElementById('pgChatApiKey').value = saved.apiKey;
+            if (saved.model)   document.getElementById('pgChatModel').value = saved.model;
+            if (saved.system)  document.getElementById('pgChatSystem').value = saved.system;
+        } catch(e) {}
+    })();
+    document.getElementById('pgChatSaveCfg').addEventListener('click', function() {
+        try {
+            localStorage.setItem('pg_chat_cfg', JSON.stringify({
+                baseUrl: document.getElementById('pgChatBaseUrl').value,
+                apiKey: document.getElementById('pgChatApiKey').value,
+                model: document.getElementById('pgChatModel').value,
+                system: document.getElementById('pgChatSystem').value
+            }));
+            pgChatBanner('已保存到本地浏览器', 'success');
+        } catch(e) { pgChatBanner('保存失败：' + e.message, 'error'); }
+    });
+    function pgChatClearKey() {
+        document.getElementById('pgChatApiKey').value = '';
+        try { localStorage.removeItem('pg_chat_cfg'); } catch(e) {}
+        pgChatBanner('Key 已清除', 'success');
+    }
+
+    function pgChatRender() {
+        var output = document.getElementById('pgChatOutput');
+        if (!pgChatHistory.length) {
+            output.innerHTML = '<div class="pg-empty" style="margin:auto;"><span class="pg-emoji">💬</span>填好 API Key 后输入消息，点击「发送」</div>';
+            return;
+        }
+        output.innerHTML = '';
+        output.style.display = 'block';
+        output.style.alignItems = 'stretch';
+        output.style.justifyContent = 'flex-start';
+        pgChatHistory.forEach(function(m){
+            if (m.role === 'system') return;  // don't render system in UI
+            var row = document.createElement('div');
+            row.className = 'pg-msg ' + m.role;
+            var bubble = document.createElement('div');
+            bubble.className = 'pg-bubble';
+            bubble.textContent = m.content;
+            row.appendChild(bubble);
+            output.appendChild(row);
+        });
+        output.scrollTop = output.scrollHeight;
+    }
+
+    function pgChatReset() {
+        pgChatHistory = [];
+        pgChatRender();
+        pgChatBanner('对话已清空', 'success');
+    }
+
+    async function pgChat() {
+        var baseUrl = document.getElementById('pgChatBaseUrl').value.trim().replace(/\/$/, '');
+        var apiKey = document.getElementById('pgChatApiKey').value.trim();
+        var model = document.getElementById('pgChatModel').value;
+        var temp = parseFloat(document.getElementById('pgChatTemp').value);
+        var system = document.getElementById('pgChatSystem').value.trim();
+        var msg = document.getElementById('pgChatMessage').value.trim();
+        var btn = document.getElementById('pgChatSendBtn');
+        var status = document.getElementById('pgChatStatus');
+
+        if (!apiKey) { pgChatBanner('请先填写 API Key', 'error'); return; }
+        if (!msg) { pgChatBanner('请输入消息', 'error'); return; }
+
+        // Build messages: system (if any & not yet pushed) + history + new user message
+        var messages = [];
+        if (system) messages.push({ role: 'system', content: system });
+        pgChatHistory.forEach(function(m){
+            if (m.role !== 'system') messages.push(m);
+        });
+        messages.push({ role: 'user', content: msg });
+
+        // Push user message into history & render
+        pgChatHistory.push({ role: 'user', content: msg });
+        pgChatRender();
+        document.getElementById('pgChatMessage').value = '';
+
+        // Append loading bubble
+        var output = document.getElementById('pgChatOutput');
+        var loadingRow = document.createElement('div');
+        loadingRow.className = 'pg-msg assistant';
+        loadingRow.id = 'pgChatLoadingRow';
+        loadingRow.innerHTML = '<div class="pg-bubble"><div class="pg-spinner" style="width:18px;height:18px;display:inline-block;vertical-align:middle;"></div> 思考中...</div>';
+        output.appendChild(loadingRow);
+        output.scrollTop = output.scrollHeight;
+
+        btn.disabled = true;
+        status.textContent = '请求中...';
+        var t0 = Date.now();
+
+        try {
+            var resp = await fetch(baseUrl + '/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apiKey
+                },
+                body: JSON.stringify({
+                    model: model,
+                    messages: messages,
+                    temperature: isNaN(temp) ? 0.7 : temp
+                })
+            });
+            var data = await resp.json();
+            // Remove loading row
+            var lr = document.getElementById('pgChatLoadingRow');
+            if (lr) lr.remove();
+            if (!resp.ok) {
+                var errMsg = (data.error && data.error.message) || ('HTTP ' + resp.status);
+                pgChatBanner('❌ ' + errMsg, 'error');
+                status.textContent = '失败';
+                // Roll back the user message we pushed
+                pgChatHistory.pop();
+                pgChatRender();
+                return;
+            }
+            var content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+            if (!content) {
+                pgChatBanner('返回空内容', 'error');
+                pgChatHistory.pop();
+                pgChatRender();
+                return;
+            }
+            pgChatHistory.push({ role: 'assistant', content: content });
+            pgChatRender();
+            var elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+            var tokens = data.usage ? ' · ' + data.usage.total_tokens + ' tokens' : '';
+            status.textContent = '完成 · ' + elapsed + 's' + tokens;
+        } catch (err) {
+            var lr2 = document.getElementById('pgChatLoadingRow');
+            if (lr2) lr2.remove();
+            pgChatBanner('❌ 请求失败：' + err.message, 'error');
+            status.textContent = '失败';
+            pgChatHistory.pop();
+            pgChatRender();
+        } finally {
+            btn.disabled = false;
+        }
+    }
 
     // Expose globally
     window.pgGenerate = pgGenerate;
@@ -1265,6 +1478,9 @@ curl https://patchtick.com/anthropic/v1/messages \
     window.pgClearHistory = pgClearHistory;
     window.pgOpenLightbox = pgOpenLightbox;
     window.pgCloseLightbox = pgCloseLightbox;
+    window.pgChat = pgChat;
+    window.pgChatReset = pgChatReset;
+    window.pgChatClearKey = pgChatClearKey;
 </script>
 
 </body>
